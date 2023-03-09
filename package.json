@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@motionone/solid": "^10.15.5",
+    "ky": "^0.33.2",
     "solid-icons": "^1.0.4",
     "solid-js": "^1.6.10"
   }

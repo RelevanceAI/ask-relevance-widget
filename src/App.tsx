@@ -1,5 +1,5 @@
 import { FiHelpCircle } from "solid-icons/fi";
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import Help from "./Help";
 
 function App() {
@@ -15,7 +15,9 @@ function App() {
         <FiHelpCircle size={24} class="!text-gray-800" />
       </button>
 
-      <Help />
+      <Show when={modalVisible()}>
+        <Help />
+      </Show>
     </>
   );
 }
