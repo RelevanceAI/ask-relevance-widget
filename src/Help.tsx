@@ -77,13 +77,14 @@ function Help() {
             },
           ],
           minimumRelevance: 0.1,
+          pageSize: 3,
           instantAnswerQuery: {
             field: exampleConfig.field,
-            query: `Given the context information above and not prior knowledge, answer the question: ${question()}`,
-          },
+            query: question(),
           preset: "support3",
           urlField: exampleConfig.reference_url_field,
           titleField: exampleConfig.reference_title_field,
+          },
         },
       })
       .json();
