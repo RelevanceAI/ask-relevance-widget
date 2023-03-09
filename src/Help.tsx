@@ -1,6 +1,9 @@
-import { createMemo, createSignal, onMount } from "solid-js";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
 import RelevanceGlyph from "./relevance.svg";
 import ky from "ky";
+import { Motion } from "@motionone/solid";
+import { spring } from "motion";
+import { Repeat } from "@solid-primitives/range";
 
 // config.field
 // config.exampleQuestions: [' ']
@@ -57,6 +60,7 @@ function Help() {
   });
 
   const submitQuestion = async () => {
+    setAnswerObj(null);
     setLoadingAnswer(true);
 
     const json = await ky
@@ -96,7 +100,7 @@ function Help() {
     <div
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl rounded-xl shadow-lg border border-gray-300/10 fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+      class="w-full max-w-2xl rounded-xl shadow-lg border border-gray-300/10 fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all"
     >
       {/** Input */}
       <div class="px-5 py-5">
@@ -116,15 +120,34 @@ function Help() {
 
       {/** Answer */}
 
-      <div class="border-t border-gray-200/75 w-full px-5 py-5">
-        <p class="text-gray-800 leading-[1.775]">
-          {loadingAnswer()
-            ? "Loading..."
-            : answer()
-            ? answer()
-            : "No answer yet"}
-        </p>
-      </div>
+      <Show when={loadingAnswer()}>
+        <div class="border-t border-gray-200/75 w-full px-5 py-5">
+          <div class="flex items-center gap-1">
+            <Repeat times={3}>
+              {(i) => (
+                <Motion.div
+                  class="flex items-center gap-1"
+                  animate={{ opacity: [0.8, 1, 0.8], scale: [0.8, 1, 0.8] }}
+                  transition={{
+                    offset: [0, 0.2, 1],
+                    duration: 0.2 * 3,
+                    delay: i * 0.2,
+                    repeat: Infinity,
+                  }}
+                >
+                  <div class="w-2 h-2 rounded-full bg-gray-400" />
+                </Motion.div>
+              )}
+            </Repeat>
+          </div>
+        </div>
+      </Show>
+
+      <Show when={answer()}>
+        <div class="border-t border-gray-200/75 w-full px-5 py-5">
+          <p class="text-gray-800 leading-[1.775]">{answer()}</p>
+        </div>
+      </Show>
 
       <div class="border-t border-gray-200/75 w-full px-5 py-2 flex items-center justify-between">
         <div class="flex items-center gap-2">
