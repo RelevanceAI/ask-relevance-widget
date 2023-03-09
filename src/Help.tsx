@@ -14,10 +14,10 @@ import { Repeat } from "@solid-primitives/range";
 // config.url
 
 const exampleConfig = {
-  url: "https://api-bcbe5a.stack.tryrelevance.com/latest/datasets/model3-manual/simple_search",
+  url: "https://api-bcbe5a.stack.tryrelevance.com/latest/datasets/redis-docs/simple_search",
   field: "content",
   vector_field: "content_vector_",
-  reference_url_field: "page-href",
+  reference_url_field: "url",
   reference_title_field: "title",
   auth_header:
     "1b4c9fb5-b838-4cc9-b875-d6d29573cb3c:OWM5NWQ1NGEtZDk3MC00ZjgzLWFiNGEtNjBjODI0MjdjNzY5",
@@ -59,6 +59,16 @@ function Help() {
     return answer;
   });
 
+  const references = createMemo(() => {
+    if (!answerObj()) return null;
+
+    const {
+      instantAnswerResults: { references },
+    } = answerObj() as Record<string, any>;
+
+    return references;
+  });
+
   const submitQuestion = async () => {
     setAnswerObj(null);
     setLoadingAnswer(true);
@@ -77,13 +87,14 @@ function Help() {
             },
           ],
           minimumRelevance: 0.1,
+          pageSize: 3,
           instantAnswerQuery: {
             field: exampleConfig.field,
-            query: `Given the context information above and not prior knowledge, answer the question: ${question()}`,
+            query: question(),
+            preset: "support3",
+            urlField: exampleConfig.reference_url_field,
+            titleField: exampleConfig.reference_title_field,
           },
-          preset: "support3",
-          urlField: exampleConfig.reference_url_field,
-          titleField: exampleConfig.reference_title_field,
         },
       })
       .json();
@@ -146,6 +157,9 @@ function Help() {
       <Show when={answer()}>
         <div class="border-t border-gray-200/75 w-full px-5 py-5">
           <p class="text-gray-800 leading-[1.775]">{answer()}</p>
+          <ul class="mt-4">
+            {references()?.map((ref: any) => (<li class="mt-2 text-gray-900 text-sm font-semibold"><a href={ref.url}>{ref.title}</a></li>))}
+          </ul>
         </div>
       </Show>
 
