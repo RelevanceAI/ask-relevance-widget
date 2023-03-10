@@ -29,7 +29,7 @@ jobs:
         name: Generate release tag
         run: |
           echo "::set-output name=release_tag::Release_$(date +"%Y.%m.%d_%H-%M")"
-      - name: Release user firmware
+      - name: Create release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
