@@ -6,11 +6,25 @@
 ## Installation
 To integrate Ask Relevance into your app, include this snippet in your HTML head element.
 ```html
-<script src="" config="BASE64_CONFIG" defer />
+<script src="https://cdn.jsdelivr.net/gh/relevanceai/ask-relevance-widget/dist/bundle.min.js" config="BASE64_CONFIG" defer />
 ```
 
+Replace `BASE64_CONFIG` with a valid JSON object [parsed to a Base64 string](https://codebeautify.org/json-to-base64-converter). The config is as follows:
 ```ts
-// TODO: Documentation on config
+{
+  /** URL to query for answers */
+  url: string;
+  /** Field in dataset to search on */
+  field: string;
+  /** Vector field in dataset to search on */
+  vector_field: string;
+  /** Field in dataset containing reference URLs */
+  reference_url_field: string;
+  /** Field in dataset containing reference titles */
+  reference_title_field: string;
+  /** Authentication header for API requests */
+  auth_header: string;
+}
 ```
 
 ## Development
@@ -37,4 +51,4 @@ bun run dev
 Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API.
 
 # Releases
-Releases are handled automatically by GitHub Actions. TODO: more docs here
+When a new commit is pushed to `main`, a release is cut and the binaries committed to `main` automatically via GitHub Actions. 
