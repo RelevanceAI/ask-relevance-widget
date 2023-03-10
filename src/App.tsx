@@ -2,6 +2,8 @@ import { FiHelpCircle } from "solid-icons/fi";
 import { createSignal, Show } from "solid-js";
 import Help from "./Help";
 
+import "./index.css";
+
 function App() {
   const [modalVisible, setModalVisible] = createSignal(false);
 

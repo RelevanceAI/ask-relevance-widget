@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "autoprefixer": "^10.4.13",
+    "autoprefixer": "^10.4.14",
     "postcss": "^8.4.21",
     "solid-devtools": "^0.26.0",
     "tailwindcss": "^3.2.7",
@@ -20,9 +20,15 @@
   },
   "dependencies": {
     "@motionone/solid": "^10.15.5",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-replace": "^5.0.2",
     "@solid-primitives/range": "^0.1.8",
     "ky": "^0.33.2",
     "motion": "^10.15.5",
+    "postcss-import": "^15.1.0",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-terser": "^7.0.2",
     "solid-icons": "^1.0.4",
     "solid-js": "^1.6.10"
   }

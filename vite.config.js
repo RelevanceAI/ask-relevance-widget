@@ -17,5 +17,19 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
+    polyfillDynamicImport: false,
+    cssCodeSplit: false,
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      input: "./src/index.jsx",
+      output: {
+        manualChunks: undefined,
+        inlineDynamicImports: true,
+        format: "iife",
+        entryFileNames: "bundle.js",
+        chunkFileNames: "[name].js",
+        assetFileNames: "[name][extname]",
+      },
+    },
   },
 });
