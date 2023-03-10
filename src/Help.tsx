@@ -1,9 +1,9 @@
+import { Motion } from "@motionone/solid";
+import { Repeat } from "@solid-primitives/range";
+import ky from "ky";
+import { FiFileText } from "solid-icons/fi";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
 import RelevanceGlyph from "./relevance.svg";
-import ky from "ky";
-import { Motion } from "@motionone/solid";
-import { spring } from "motion";
-import { Repeat } from "@solid-primitives/range";
 
 // config.field
 // config.exampleQuestions: [' ']
@@ -69,6 +69,10 @@ function Help() {
     return references;
   });
 
+  const referencesExist = createMemo(() => {
+    return Array.isArray(references()) && references().length > 0;
+  });
+
   const submitQuestion = async () => {
     setAnswerObj(null);
     setLoadingAnswer(true);
@@ -111,7 +115,7 @@ function Help() {
     <div
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl rounded-xl shadow-lg border border-gray-300/10 fixed top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all"
+      class="w-full max-w-2xl rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
     >
       {/** Input */}
       <div class="px-5 py-5">
@@ -157,9 +161,19 @@ function Help() {
       <Show when={answer()}>
         <div class="border-t border-gray-200/75 w-full px-5 py-5">
           <p class="text-gray-800 leading-[1.775]">{answer()}</p>
-          <ul class="mt-4">
-            {references()?.map((ref: any) => (<li class="mt-2 text-gray-900 text-sm font-semibold"><a href={ref.url}>{ref.title}</a></li>))}
-          </ul>
+
+          <Show when={referencesExist()}>
+            <div role="group" class="pt-3 flex flex-wrap gap-2.5">
+              {references()?.map((ref: any) => (
+                <a role="option" href={ref.url} target="_blank">
+                  <button class="py-0.5 px-2 rounded-md bg-indigo-100 group text-indigo-800 text-sm flex items-center gap-1.5">
+                    <FiFileText size={12} class="!text-indigo-800 opacity-80" />
+                    <span class="group-hover:underline">{ref.title}</span>
+                  </button>
+                </a>
+              ))}
+            </div>
+          </Show>
         </div>
       </Show>
 
