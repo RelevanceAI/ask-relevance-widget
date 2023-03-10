@@ -4,7 +4,8 @@ import { render } from "solid-js/web";
 import "./index.css";
 import App from "./App";
 
-const root = document.getElementById("root");
+const el = document.createElement("div");
+document.body.appendChild(el);
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
@@ -12,4 +13,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-render(() => <App />, root);
+render(() => <App />, el);

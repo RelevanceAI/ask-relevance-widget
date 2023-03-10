@@ -1,12 +1,10 @@
+import postcss from "postcss";
+import devtools from "solid-devtools/vite";
+import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import solidPlugin from "vite-plugin-solid";
 import solidSvg from "vite-plugin-solid-svg";
-import devtools from "solid-devtools/vite";
-import postcss from "postcss";
-import tailwindcss from "tailwindcss";
-import postcssImport from "postcss-import";
-import postcssUrl from "postcss-url";
-import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
   plugins: [
@@ -23,13 +21,9 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
-    polyfillDynamicImport: false,
-    cssCodeSplit: false,
-    assetsInlineLimit: 0,
     rollupOptions: {
       input: "./src/index.jsx",
       output: {
-        manualChunks: undefined,
         inlineDynamicImports: true,
         format: "iife",
         entryFileNames: "bundle.js",
@@ -41,10 +35,6 @@ export default defineConfig({
           plugins: [
             tailwindcss({
               content: ["./src/**/*.tsx", "./src/**/*.jsx"],
-            }),
-            postcssImport(),
-            postcssUrl({
-              url: "inline",
             }),
           ],
           extract: false,

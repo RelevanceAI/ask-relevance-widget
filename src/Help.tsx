@@ -115,7 +115,7 @@ function Help() {
     <div
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
+      class="w-full max-w-2xl bg-white rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
     >
       {/** Input */}
       <div class="px-5 py-5">
