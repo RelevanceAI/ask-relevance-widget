@@ -5,28 +5,29 @@ import { FiFileText } from "solid-icons/fi";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
 import RelevanceGlyph from "./relevance.svg";
 
-const exampleConfig = {
-  url: "https://api-bcbe5a.stack.tryrelevance.com/latest/datasets/redis-docs/simple_search",
-  field: "content",
-  vector_field: "content_vector_",
-  reference_url_field: "url",
-  reference_title_field: "title",
-  auth_header:
-    "1b4c9fb5-b838-4cc9-b875-d6d29573cb3c:OWM5NWQ1NGEtZDk3MC00ZjgzLWFiNGEtNjBjODI0MjdjNzY5",
-};
+interface Configuration {
+  /** URL to query for answers */
+  url: string;
+  /** Field in dataset to search on */
+  field: string;
+  /** Vector field in dataset to search on */
+  vector_field: string;
+  /** Field in dataset containing reference URLs */
+  reference_url_field: string;
+  /** Field in dataset containing reference titles */
+  reference_title_field: string;
+  /** Authentication header for API requests */
+  auth_header: string;
+  /** GPT model to use */
+  model?: string;
+}
 
-function Help() {
+function Help(props: Record<"config", Configuration>) {
   let input: undefined | HTMLInputElement = undefined;
 
   onMount(() => {
-    // Focus element when command bar appears
     input?.focus();
   });
-
-  // store string somewhere
-  // only allow submit if there's been a string entered
-  // on submit, query api
-  // then animate modal and display result
 
   const handleEnter = (event: KeyboardEvent) => {
     if (event.key === "Enter" && question()) {
@@ -74,26 +75,26 @@ function Help() {
 
     try {
       const res: Record<string, any> = await ky
-        .post(exampleConfig.url, {
+        .post(props.config.url, {
           headers: {
-            Authorization: `${exampleConfig.auth_header}`,
+            Authorization: `${props.config.auth_header}`,
           },
           json: {
             vectorSearchQuery: [
               {
-                field: exampleConfig.vector_field,
-                model: exampleConfig?.model ?? "all-mpnet-base-v2",
+                field: props.config.vector_field,
+                model: props.config?.model ?? "all-mpnet-base-v2",
                 query: question(),
               },
             ],
             minimumRelevance: 0.1,
             pageSize: 3,
             instantAnswerQuery: {
-              field: exampleConfig.field,
+              field: props.config.field,
               query: question(),
               preset: "support3",
-              urlField: exampleConfig.reference_url_field,
-              titleField: exampleConfig.reference_title_field,
+              urlField: props.config.reference_url_field,
+              titleField: props.config.reference_title_field,
             },
           },
         })
@@ -115,7 +116,7 @@ function Help() {
     <div
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl bg-white rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
+      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
     >
       <div class="px-5 py-5">
         <input
@@ -192,7 +193,7 @@ function Help() {
         </div>
 
         <div class="flex items-center gap-2">
-          <div class="px-1 py-0.5 rounded bg-gray-50 w-fit text-xs text-gray-600">
+          <div class="px-1 py-0.5 rounded bg-gray-50 w-fit text-xs border border-gray-300/25 text-gray-600">
             ⏎
           </div>
           <span class="text-xs text-gray-600">Submit question</span>
