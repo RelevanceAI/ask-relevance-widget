@@ -1,32 +1,40 @@
-## Usage
+<div align="center">
+<img width="800" alt="Screenshot 2023-03-10 at 5 21 42 pm" src="https://user-images.githubusercontent.com/33971845/224244436-11887ef8-66f5-4800-92e0-4c25d221a7a6.png">
+<p>The <b>Ask Relevance widget</b> lets you embed an AI support assistant into your app in one line of code. ⚡️🔮🧪</p> 
+</div>
 
-Those templates dependencies are maintained via [bun](https://bun.sh/) via `bun i`.
-
-```bash
-$ bun i
+## Installation
+To integrate Ask Relevance into your app, include this snippet in your HTML head element.
+```html
+<script src="" config="BASE64_CONFIG" defer />
 ```
 
-### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
+```ts
+// TODO: Documentation on config
+```
 
-## Available Scripts
+## Development
 
-In the project directory, you can run:
+[Bun](https://bun.sh) is used for package management and running scripts. 
 
-### `bun run dev`
+```shell
+# Install Bun if you don't have it:
+curl -fsSL https://bun.sh/install | bash
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+# Install dependencies
+bun i
 
-The page will reload if you make edits.<br>
+# Start local dev server
+bun run dev
+```
 
-### `bun run build`
+[Solid.js](https://www.solidjs.com/) is used as the framework due to its small bundle size and excellent performance.
 
-Builds the app for production to the `dist` folder.<br>
-It correctly bundles Solid in production mode and optimizes the build for the best performance.
+[Trunk](https://trunk.io/) is used for formatting and linting. You can either:
+- install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=Trunk.io) which handles setup and automatic format/lint automatically
+- use the executable at the repo root (`./trunk`)
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API.
 
-## Deployment
-
-You can deploy the `dist` folder to any static host provider (netlify, surge, now, etc.)
+# Releases
+Releases are handled automatically by GitHub Actions. TODO: more docs here
