@@ -23,7 +23,19 @@ function App() {
   let config;
 
   try {
-    config = JSON.parse(decodedConfig ?? "");
+    const isDevEnvironment = process.env.NODE_ENV === "development";
+
+    config = isDevEnvironment
+      ? {
+          url: "https://api-bcbe5a.stack.tryrelevance.com/latest/datasets/redis-docs/simple_search",
+          field: "content",
+          vector_field: "content_vector_",
+          reference_url_field: "url",
+          reference_title_field: "title",
+          auth_header:
+            "1b4c9fb5-b838-4cc9-b875-d6d29573cb3c:OWM5NWQ1NGEtZDk3MC00ZjgzLWFiNGEtNjBjODI0MjdjNzY5",
+        }
+      : JSON.parse(decodedConfig ?? "");
 
     return (
       <>
