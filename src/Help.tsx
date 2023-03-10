@@ -116,7 +116,7 @@ function Help(props: Record<"config", Configuration>) {
     <div
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/10 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
+      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/30 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
     >
       <div class="px-5 py-5">
         <input
