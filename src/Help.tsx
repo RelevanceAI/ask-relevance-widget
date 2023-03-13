@@ -22,11 +22,28 @@ interface Configuration {
   model?: string;
 }
 
-function Help(props: Record<"config", Configuration>) {
+interface HelpProps {
+  config: Configuration;
+  demo?: boolean;
+}
+
+function Help(props: HelpProps) {
   let input: undefined | HTMLInputElement = undefined;
+  const isDemoMode = props?.demo;
+
+  let widget: undefined | HTMLInputElement = undefined;
 
   onMount(() => {
     input?.focus();
+
+    if (isDemoMode) {
+      const previewContainer = document.getElementById("widget-preview");
+
+      if (widget) {
+        // Append widget to preview container
+        previewContainer?.appendChild(widget);
+      }
+    }
   });
 
   const handleEnter = (event: KeyboardEvent) => {
@@ -114,9 +131,13 @@ function Help(props: Record<"config", Configuration>) {
 
   return (
     <div
+      ref={widget}
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/30 fixed top-24 left-1/2 transform -translate-x-1/2 transition-all"
+      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/30 transition-all"
+      classList={{
+        "fixed top-24 left-1/2 transform -translate-x-1/2": !props?.demo,
+      }}
     >
       <div class="px-5 py-5">
         <input

@@ -11,8 +11,8 @@ function App() {
   };
 
   createEffect(() => {
-    // Only listen for Esc when help visible.
-    if (helpVisible()) {
+    // Only listen for Esc when help visible and not demo mode.
+    if (helpVisible() && !isDemoMode) {
       createShortcut(["Escape"], closeHelp);
     }
   });
@@ -21,6 +21,9 @@ function App() {
   const encodedConfig = document.currentScript?.getAttribute("config");
   const decodedConfig = encodedConfig ? atob(encodedConfig) : undefined;
   let config;
+
+  // Check if widget is in demo mode
+  const isDemoMode = document.currentScript?.getAttribute("demo") === "true";
 
   try {
     const isDevEnvironment = process.env.NODE_ENV === "development";
@@ -39,16 +42,18 @@ function App() {
 
     return (
       <>
-        <button
-          aria-label="Open help prompt"
-          class="fixed bottom-6 right-6 bg-white rounded-full border border-gray-300/75 hover:bg-gray-100 shadow p-2 w-fit h-fit"
-          onClick={() => setHelpVisible(!helpVisible())}
-        >
-          <FiHelpCircle size={24} class="!text-gray-800" />
-        </button>
+        <Show when={!isDemoMode}>
+          <button
+            aria-label="Open help prompt"
+            class="fixed bottom-6 right-6 bg-white rounded-full border border-gray-300/75 hover:bg-gray-100 shadow p-2 w-fit h-fit"
+            onClick={() => setHelpVisible(!helpVisible())}
+          >
+            <FiHelpCircle size={24} class="!text-gray-800" />
+          </button>
+        </Show>
 
-        <Show when={helpVisible()}>
-          <Help config={config} />
+        <Show when={isDemoMode || helpVisible()}>
+          <Help config={config} demo={isDemoMode} />
         </Show>
       </>
     );
