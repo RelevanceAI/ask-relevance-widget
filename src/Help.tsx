@@ -38,6 +38,7 @@ function Help(props: HelpProps) {
 
     if (isDemoMode) {
       const previewContainer = document.getElementById("widget-preview");
+      console.log("[Debugging] Running in demo mode", previewContainer, widget);
 
       if (widget) {
         // Append widget to preview container
