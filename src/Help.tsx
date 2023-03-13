@@ -132,6 +132,7 @@ function Help(props: HelpProps) {
   return (
     <div
       ref={widget}
+      id="ask-relevance__root"
       role="dialog"
       aria-modal="true"
       class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/30 transition-all"
@@ -139,7 +140,7 @@ function Help(props: HelpProps) {
         "fixed top-24 left-1/2 transform -translate-x-1/2": !props?.demo,
       }}
     >
-      <div class="px-5 py-5">
+      <div class="px-5 py-5" id="ask-relevance__input">
         <input
           ref={input}
           autocomplete="off"
