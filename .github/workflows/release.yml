@@ -22,18 +22,21 @@ jobs:
       - id: extract
         name: Extract binary to ./dist
         run: unzip -o *build-pr*.zip -d dist/
-      - id: commit
-        name: Commit and push binaries
-        uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
-          message: 'chore: commit binaries (#${{ github.event.number }})' 
       - id: version
         name: Generate semantic version
         uses: paulhatch/semantic-version@v5.0.2
         with:
           major_pattern: "MAJOR"
           minor_pattern: "MINOR"
+      - id: bump
+        name: Bump package.json version
+        run: npm version ${{ steps.version.outputs.version }}
+      - id: commit
+        name: Commit and push binaries
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: 'chore: commit binaries (#${{ github.event.number }})' 
       - name: Create release
         uses: softprops/action-gh-release@v1
         env:
