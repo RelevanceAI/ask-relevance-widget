@@ -135,7 +135,7 @@ function Help(props: HelpProps) {
       id="ask-relevance__root"
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl z-[999] bg-white rounded-xl shadow-lg border border-gray-300/30 transition-all"
+      class="w-full max-w-2xl z-[999999999999] bg-white rounded-xl shadow-lg border border-gray-300/30 transition-all"
       classList={{
         "fixed top-24 left-1/2 transform -translate-x-1/2": !props?.demo,
       }}
