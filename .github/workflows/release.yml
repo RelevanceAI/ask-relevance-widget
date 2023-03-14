@@ -22,7 +22,6 @@ jobs:
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
         with:
-          add: './dist/bundle.js'
           default_author: github_actions
           message: 'chore: commit binaries (#${{ github.event.number }})' 
       - id: version
