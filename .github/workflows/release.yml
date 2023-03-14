@@ -13,6 +13,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Echo tags
+        run: echo git tag --list
       - id: download
         name: Download build artifacts
         uses: dawidd6/action-download-artifact@v2
