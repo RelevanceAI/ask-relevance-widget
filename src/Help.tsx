@@ -208,7 +208,7 @@ function Help(props: HelpProps) {
 
       <div class="border-t border-gray-200/75 w-full px-5 py-2 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <RelevanceGlyph class="h-3 opacity-60" />
+          <RelevanceGlyph class="h-3 opacity-70" />
           <span class="text-xs text-gray-400 leading-none whitespace-nowrap">
             Powered by Relevance AI
           </span>
