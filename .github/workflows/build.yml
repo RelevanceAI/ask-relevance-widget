@@ -1,8 +1,5 @@
 name: Build
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -19,35 +16,25 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
+      - id: hash
+        name: Hash lockfile
+        run: echo "lockb-hash=$(sha1sum ./bun.lockb | head -c 40)" >> $GITHUB_OUTPUT
+      - id: cache
+        name: Cache build dependencies
+        uses: actions/cache@v3
+        with: 
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-${{steps.hash.outputs.lockb-hash}}
       - id: install-deps
-        name: Install dependencies
-        run: bun install
+        name: Install build dependencies
+        run: bun install --production
       - id: build
         name: Build
         run: bun run build
-      - id: tag
-        name: Generate release tag
-        run: |
-          echo "::set-output name=release_tag::Release_$(date +"%Y.%m.%d_%H-%M")"
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: upload
+        name: Upload artifacts
+        if: steps.build.outcome == 'success'
+        uses: actions/upload-artifact@v3
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          files: |
-            ./dist/bundle.js
-      - id: commit
-        name: Commit files
-        continue-on-error: true
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add ./dist/bundle.js
-          git commit -m "chore: release binaries"
-      - name: Push binaries to master
-        if: steps.commit.outcome == 'success'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          name: build-pr-${{ github.event.number }}
+          path: ./dist
