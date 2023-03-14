@@ -4,12 +4,19 @@
 </div>
 
 ## Installation
+
 To integrate Ask Relevance into your app, include this snippet in your HTML head element.
+
 ```html
-<script src="https://cdn.jsdelivr.net/gh/relevanceai/ask-relevance-widget/dist/bundle.min.js" config="BASE64_CONFIG" defer />
+<script
+  src="https://cdn.jsdelivr.net/gh/relevanceai/ask-relevance-widget/dist/bundle.min.js"
+  config="BASE64_CONFIG"
+  defer
+/>
 ```
 
 Replace `BASE64_CONFIG` with a valid JSON object [parsed to a Base64 string](https://codebeautify.org/json-to-base64-converter). The config is as follows:
+
 ```ts
 {
   /** URL to query for answers */
@@ -29,7 +36,7 @@ Replace `BASE64_CONFIG` with a valid JSON object [parsed to a Base64 string](htt
 
 ## Development
 
-[Bun](https://bun.sh) is used for package management and running scripts. 
+[Bun](https://bun.sh) is used for package management and running scripts.
 
 ```shell
 # Install Bun if you don't have it:
@@ -45,10 +52,12 @@ bun run dev
 [Solid.js](https://www.solidjs.com/) is used as the framework due to its small bundle size and excellent performance.
 
 [Trunk](https://trunk.io/) is used for formatting and linting. You can either:
+
 - install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=Trunk.io) which handles setup and automatic format/lint automatically
 - use the executable at the repo root (`./trunk`)
 
-Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API.
+Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API. 🧸
 
 # Releases
-When a new commit is pushed to `main`, a release is cut and the binaries committed to `main` automatically via GitHub Actions. 
+
+When a new commit is pushed to `main`, a release is cut and the binaries committed to `main` automatically via GitHub Actions.
