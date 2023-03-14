@@ -27,7 +27,7 @@ jobs:
           key: ${{ runner.os }}-${{steps.hash.outputs.lockb-hash}}
       - id: install-deps
         name: Install build dependencies
-        run: bun install --production
+        run: bun install
       - id: build
         name: Build
         run: bun run build
