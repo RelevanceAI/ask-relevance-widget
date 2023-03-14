@@ -30,7 +30,7 @@ jobs:
           minor_pattern: "MINOR"
       - id: bump
         name: Bump package.json version
-        run: npm version ${{ steps.version.outputs.version }}
+        run: npm version --no-git-tag-version ${{ steps.version.outputs.version }}
       - id: commit
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
