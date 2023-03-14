@@ -56,7 +56,7 @@ bun run dev
 - install the [VS Code extension](https://marketplace.visualstudio.com/items?itemName=Trunk.io) which handles setup and automatic format/lint automatically
 - use the executable at the repo root (`./trunk`)
 
-Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API. 🧸
+Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API. 🧸❇️
 
 # Releases
 
