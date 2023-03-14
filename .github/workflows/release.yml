@@ -18,7 +18,10 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: build.yml
-          path: ./dist
+          skip_unpack: true
+      - id: extract
+        name: Extract binary to ./dist
+        run: unzip -o *build-pr*.zip -d dist/
       - id: commit
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
