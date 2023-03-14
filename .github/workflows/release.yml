@@ -1,9 +1,8 @@
 name: Release
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types: [ closed ]
   workflow_dispatch:
 jobs:
   release:
@@ -16,9 +15,7 @@ jobs:
           fetch-depth: 0
       - id: download
         name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-pr-${{ github.event.number }}
+        uses: dawidd6/action-download-artifact@v2
       - id: commit
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
@@ -26,7 +23,6 @@ jobs:
           add: './dist/bundle.js'
           default_author: github_actions
           message: 'chore: commit binaries (#${{ github.event.number }})' 
-          
       - id: version
         name: Generate semantic version
         uses: paulhatch/semantic-version@v5.0.2
