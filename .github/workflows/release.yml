@@ -5,7 +5,7 @@ on:
       - main
   workflow_dispatch:
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
       - id: checkout
@@ -13,11 +13,13 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Echo tags
+        run: git tag --list
       - id: download
         name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
-          name: build-pr-${{ github.event.number }}
+          workflow: build.yml
       - id: commit
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
@@ -25,7 +27,6 @@ jobs:
           add: './dist/bundle.js'
           default_author: github_actions
           message: 'chore: commit binaries (#${{ github.event.number }})' 
-          
       - id: version
         name: Generate semantic version
         uses: paulhatch/semantic-version@v5.0.2
@@ -37,6 +38,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.version_tag }}
           files: |
             ./dist/bundle.js
