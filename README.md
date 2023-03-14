@@ -60,4 +60,4 @@ Check the [docs](https://docs.trunk.io/docs/check-cli) for the CLI API. 🧸❇�
 
 # Releases
 
-When a new commit is pushed to `main`, a release is cut and the binaries committed to `main` automatically via GitHub Actions.
+When a new commit is pushed to `main`, a release is cut and the binaries committed to `main` automatically via GitHub Actions. ❇️
