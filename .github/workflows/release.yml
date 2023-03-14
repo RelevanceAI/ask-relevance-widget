@@ -16,6 +16,8 @@ jobs:
       - id: download
         name: Download build artifacts
         uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build.yml
       - id: commit
         name: Commit and push binaries
         uses: EndBug/add-and-commit@v9
