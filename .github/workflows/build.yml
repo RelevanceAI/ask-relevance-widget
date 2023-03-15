@@ -33,7 +33,7 @@ jobs:
         run: bun run build
       - id: upload
         name: Upload artifacts
-        if: steps.build.outcome == 'success'
+        if: steps.build.outcome == 'success' && github.event.pull_request.base.ref == 'main'
         uses: actions/upload-artifact@v3
         with:
           name: build-pr-${{ github.event.number }}
