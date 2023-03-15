@@ -1,6 +1,6 @@
 {
   "name": "ask-relevance-widget",
-  "version": "0.0.12",
+  "version": "0.1.0",
   "description": "",
   "scripts": {
     "start": "vite",
