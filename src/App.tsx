@@ -49,10 +49,10 @@ function App() {
         <Show when={!isDemoMode}>
           <button
             aria-label="Open help prompt"
-            class="fixed bottom-6 right-6 bg-white rounded-full border border-gray-300/75 hover:bg-gray-100 shadow p-2 w-fit h-fit !z-[999999]"
+            class="ar-fixed ar-bottom-6 ar-right-6 ar-bg-white ar-rounded-full ar-border ar-border-gray-300/75 ar-hover:bg-gray-100 ar-shadow ar-p-2 ar-w-fit ar-h-fit !ar-z-[999999]"
             onClick={() => setHelpVisible(!helpVisible())}
           >
-            <FiHelpCircle size={24} class="!text-gray-800" />
+            <FiHelpCircle size={24} class="!ar-text-gray-800" />
           </button>
         </Show>
 
