@@ -7,8 +7,12 @@ export default function onClickOutside(
 ) {
   if (!target) return;
 
+  const trigger = document.getElementById("ask_relevance__trigger");
+
   makeEventListener(window, "pointerdown", (e) => {
-    const isOutside = !e.composedPath().includes(target as HTMLElement);
+    const isOutside =
+      !e.composedPath().includes(target as HTMLElement) &&
+      !e.composedPath().includes(trigger as HTMLElement);
 
     if (target && isOutside) {
       callback();
