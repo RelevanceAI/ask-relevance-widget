@@ -1,7 +1,8 @@
 import { createShortcut } from "@solid-primitives/keyboard";
-import { FiHelpCircle } from "solid-icons/fi";
-import { createSignal, createEffect, Show } from "solid-js";
+import { BsQuestion } from "solid-icons/bs";
+import { createSignal, createEffect, Show, Ref } from "solid-js";
 import Help from "./Help";
+import onClickOutside from "./hooks/onClickOutside";
 
 function App() {
   const [helpVisible, setHelpVisible] = createSignal(false);
@@ -10,10 +11,13 @@ function App() {
     setHelpVisible(false);
   };
 
+  let widget: null | Ref<HTMLElement> = null;
+
   createEffect(() => {
     // Only listen for Esc when help visible and not demo mode.
     if (helpVisible() && !isDemoMode) {
       createShortcut(["Escape"], closeHelp);
+      onClickOutside(widget, closeHelp);
     }
   });
 
@@ -44,16 +48,17 @@ function App() {
       <>
         <Show when={!isDemoMode}>
           <button
+            id="ask_relevance__trigger"
             aria-label="Open help prompt"
-            class="fixed bottom-6 right-6 bg-white rounded-full border border-gray-300/75 hover:bg-gray-100 shadow p-2 w-fit h-fit !z-[999999]"
+            class="ar-fixed ar-bottom-6 ar-right-6 ar-bg-indigo-500 ar-rounded-full ar-hover:bg-gray-100 ar-shadow-lg ar-p-1 ar-w-fit ar-h-fit !ar-z-[999999]"
             onClick={() => setHelpVisible(!helpVisible())}
           >
-            <FiHelpCircle size={24} class="!text-gray-800" />
+            <BsQuestion size={48} class="!ar-text-indigo-50" />
           </button>
         </Show>
 
         <Show when={isDemoMode || helpVisible()}>
-          <Help config={config} demo={isDemoMode} />
+          <Help ref={widget} config={config} demo={isDemoMode} />
         </Show>
       </>
     );

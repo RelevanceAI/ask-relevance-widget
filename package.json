@@ -10,6 +10,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^18.15.3",
     "postcss": "^8.4.21",
     "solid-devtools": "^0.26.0",
     "tailwindcss": "^3.2.7",
@@ -21,6 +22,7 @@
     "@motionone/solid": "^10.15.5",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
+    "@solid-primitives/event-listener": "^2.2.8",
     "@solid-primitives/keyboard": "^1.0.10",
     "@solid-primitives/range": "^0.1.8",
     "ky": "^0.33.2",

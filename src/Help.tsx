@@ -3,7 +3,7 @@ import { Repeat } from "@solid-primitives/range";
 import ky from "ky";
 import { FiFileText } from "solid-icons/fi";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
-import RelevanceGlyph from "./relevance.svg";
+import RelevanceGlyph from "./relevance.svg?component-solid";
 
 interface Configuration {
   /** URL to query for answers */
@@ -22,16 +22,20 @@ interface Configuration {
   model?: string;
 }
 
+interface Reference {
+  title: string;
+  url?: string;
+}
+
 interface HelpProps {
   config: Configuration;
   demo?: boolean;
+  ref: any;
 }
 
 function Help(props: HelpProps) {
   let input: undefined | HTMLInputElement = undefined;
   const isDemoMode = props?.demo;
-
-  let widget: undefined | HTMLInputElement = undefined;
 
   onMount(() => {
     input?.focus();
@@ -39,9 +43,9 @@ function Help(props: HelpProps) {
     if (isDemoMode) {
       const previewContainer = document.getElementById("widget-preview");
 
-      if (widget) {
+      if (props.ref) {
         // Append widget to preview container
-        previewContainer?.appendChild(widget);
+        previewContainer?.appendChild(props.ref);
       }
     }
   });
@@ -78,11 +82,16 @@ function Help(props: HelpProps) {
       instantAnswerResults: { references },
     } = answerObj() as Record<string, any>;
 
-    return references;
+    return references as Reference[];
   });
 
   const referencesExist = createMemo(() => {
-    return Array.isArray(references()) && references().length > 0;
+    return (
+      Array.isArray(references()) &&
+      references()!.length > 0 &&
+      // Only show references if they contain a URL.
+      references()!.every((ref) => ref.title && ref.url)
+    );
   });
 
   const submitQuestion = async () => {
@@ -131,23 +140,24 @@ function Help(props: HelpProps) {
 
   return (
     <div
-      ref={widget}
+      ref={props.ref}
       id="ask-relevance__root"
       role="dialog"
       aria-modal="true"
-      class="w-full max-w-2xl z-[999999999999] bg-white rounded-xl shadow-lg border border-gray-300/30 transition-all"
+      class="ar-w-full ar-max-w-2xl ar-z-[999999999999] ar-bg-white ar-rounded-xl ar-shadow-lg ar-border ar-border-gray-300/30 ar-transition-all"
       classList={{
-        "fixed top-24 left-1/2 transform -translate-x-1/2": !props?.demo,
+        "ar-fixed ar-top-24 ar-left-1/2 ar-transform ar--translate-x-1/2":
+          !props?.demo,
       }}
     >
-      <div class="px-5 py-5" id="ask-relevance__input">
+      <div class="ar-px-5 ar-py-5" id="ask-relevance__input">
         <input
           ref={input}
           autocomplete="off"
           autocapitalize="off"
           spellcheck={false}
           placeholder="Ask a question..."
-          class="w-full outline-none caret-gray-500 text-gray-900 placeholder:text-gray-400"
+          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400"
           onInput={(e) => {
             setQuestion(e.currentTarget.value);
           }}
@@ -156,12 +166,12 @@ function Help(props: HelpProps) {
       </div>
 
       <Show when={answerState() === "loading"}>
-        <div class="border-t border-gray-200/75 w-full px-5 py-5">
-          <div class="flex items-center gap-1">
+        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5">
+          <div class="ar-flex ar-items-center ar-gap-1">
             <Repeat times={3}>
               {(i) => (
                 <Motion.div
-                  class="flex items-center gap-1"
+                  class="ar-flex ar-items-center ar-gap-1"
                   animate={{ opacity: [0.8, 1, 0.8], scale: [0.8, 1, 0.8] }}
                   transition={{
                     offset: [0, 0.2, 1],
@@ -170,7 +180,7 @@ function Help(props: HelpProps) {
                     repeat: Infinity,
                   }}
                 >
-                  <div class="w-2 h-2 rounded-full bg-gray-400" />
+                  <div class="ar-w-2 ar-h-2 ar-rounded-full ar-bg-gray-400" />
                 </Motion.div>
               )}
             </Repeat>
@@ -179,16 +189,19 @@ function Help(props: HelpProps) {
       </Show>
 
       <Show when={answer()}>
-        <div class="border-t border-gray-200/75 w-full px-5 py-5">
-          <p class="text-gray-800 leading-[1.775]">{answer()}</p>
+        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5">
+          <p class="ar-text-gray-800 ar-leading-[1.775]">{answer()}</p>
 
           <Show when={referencesExist()}>
-            <div role="group" class="pt-3 flex flex-wrap gap-2.5">
+            <div role="group" class="ar-pt-3 ar-flex ar-flex-wrap ar-gap-2.5">
               {references()?.map((ref: any) => (
                 <a role="option" href={ref.url} target="_blank">
-                  <button class="py-0.5 px-2 rounded-md bg-indigo-100 group text-indigo-800 text-sm flex items-center gap-1.5">
-                    <FiFileText size={12} class="!text-indigo-800 opacity-80" />
-                    <span class="group-hover:underline">{ref.title}</span>
+                  <button class="ar-py-0.5 ar-px-2 ar-rounded-md ar-bg-indigo-100 ar-group ar-text-indigo-800 ar-text-sm ar-flex ar-items-center ar-gap-1.5">
+                    <FiFileText
+                      size={12}
+                      class="!ar-text-indigo-800 ar-opacity-80"
+                    />
+                    <span class="ar-group-hover:underline">{ref.title}</span>
                   </button>
                 </a>
               ))}
@@ -198,27 +211,27 @@ function Help(props: HelpProps) {
       </Show>
 
       <Show when={answerState() === "error"}>
-        <div class="border-t border-gray-200/75 w-full px-5 py-5">
-          <p class="text-gray-800 leading-[1.775]">
+        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5">
+          <p class="ar-text-gray-800 ar-leading-[1.775]">
             I'm sorry, I'm having trouble generating your answer. Please try
             asking your question again.
           </p>
         </div>
       </Show>
 
-      <div class="border-t border-gray-200/75 w-full px-5 py-2 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <RelevanceGlyph class="h-3 opacity-70" />
-          <span class="text-xs text-gray-400 leading-none whitespace-nowrap">
+      <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-px-5 ar-py-2 ar-flex ar-items-center ar-justify-between">
+        <div class="ar-flex ar-items-center ar-gap-2">
+          <RelevanceGlyph class="ar-h-3 ar-opacity-70" />
+          <span class="ar-text-xs ar-text-gray-400 ar-leading-none ar-whitespace-nowrap">
             Powered by Relevance AI
           </span>
         </div>
 
-        <div class="flex items-center gap-2">
-          <div class="px-1 py-0.5 rounded bg-gray-50 w-fit text-xs border border-gray-300/25 text-gray-600">
+        <div class="ar-flex ar-items-center ar-gap-2">
+          <div class="ar-px-1 ar-py-0.5 ar-rounded ar-bg-gray-50 ar-w-fit ar-text-xs ar-border ar-border-gray-300/25 ar-text-gray-600">
             ⏎
           </div>
-          <span class="text-xs text-gray-600">Submit question</span>
+          <span class="ar-text-xs ar-text-gray-600">Submit question</span>
         </div>
       </div>
     </div>
