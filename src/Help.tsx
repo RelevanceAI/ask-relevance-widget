@@ -57,8 +57,11 @@ function Help(props: HelpProps) {
   };
 
   const [question, setQuestion] = createSignal("");
-  const [loadingAnswer, setLoadingAnswer] = createSignal(false);
   const [answerState, setAnswerState] = createSignal<
+    "none" | "loading" | "success" | "error"
+  >("none");
+
+  const [resultsState, setResultsState] = createSignal<
     "none" | "loading" | "success" | "error"
   >("none");
   const [answerObj, setAnswerObj] = createSignal<null | Record<string, any>>(
@@ -94,13 +97,26 @@ function Help(props: HelpProps) {
     );
   });
 
+  const [resultsObj, setResultsObj] = createSignal<null | Record<string, any>>(
+    null
+  );
+
+  const results = createMemo(() => {
+    if (!resultsObj()) return null;
+
+    const { results } = resultsObj() as Record<string, any>;
+
+    return results;
+  });
+
   const submitQuestion = async () => {
     setAnswerObj(null);
-    setLoadingAnswer(true);
+    setResultsObj(null);
     setAnswerState("loading");
+    setResultsState("loading");
 
     try {
-      const res: Record<string, any> = await ky
+      const fetchAIAnswer: Record<string, any> = ky
         .post(props.config.url, {
           headers: {
             Authorization: `${props.config.auth_header}`,
@@ -126,13 +142,40 @@ function Help(props: HelpProps) {
         })
         .json();
 
-      if (res.instantAnswerResults?.status === "failed") {
-        throw new Error();
-      }
+      const fetchResults: Record<string, any> = ky
+        .post(props.config.url, {
+          headers: {
+            Authorization: `${props.config.auth_header}`,
+          },
+          json: {
+            vectorSearchQuery: [
+              {
+                field: props.config.vector_field,
+                model: props.config?.model ?? "all-mpnet-base-v2",
+                query: question(),
+              },
+            ],
+            minimumRelevance: 0.1,
+            pageSize: 3,
+          },
+        })
+        .json();
 
-      setAnswerObj(res);
-      setAnswerState("success");
-      setLoadingAnswer(false);
+      await Promise.all([
+        fetchResults.then((res) => {
+          setResultsObj(res);
+          setResultsState("success");
+        }),
+        fetchAIAnswer.then((res) => {
+          setAnswerObj(res);
+          setAnswerState("success");
+        }),
+      ]);
+
+      // TODO: Refactor
+      /* if (res.instantAnswerResults?.status === "failed") {
+        throw new Error();
+      } */
     } catch (error) {
       setAnswerState("error");
     }
@@ -195,7 +238,11 @@ function Help(props: HelpProps) {
           <Show when={referencesExist()}>
             <div role="group" class="ar-pt-3 ar-flex ar-flex-wrap ar-gap-2.5">
               {references()?.map((ref: any) => (
-                <a role="option" href={ref.url} target="_blank">
+                <a
+                  role="option"
+                  href={ref[props.config.reference_url_field]}
+                  target="_blank"
+                >
                   <button class="ar-py-0.5 ar-px-2 ar-rounded-md ar-bg-indigo-100 ar-group ar-text-indigo-800 ar-text-sm ar-flex ar-items-center ar-gap-1.5">
                     <FiFileText
                       size={12}
@@ -216,6 +263,28 @@ function Help(props: HelpProps) {
             I'm sorry, I'm having trouble generating your answer. Please try
             asking your question again.
           </p>
+        </div>
+      </Show>
+
+      <Show when={resultsState() === "loading" || resultsState() === "success"}>
+        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5 ar-flex ar-flex-col ar-gap-2">
+          <p class="ar-text-gray-900 ar-font-medium ar-text-sm">Docs</p>
+          <Show when={results()}>
+            <div class="ar-flex ar-flex-col">
+              {results().map((result) => (
+                <a
+                  target="_blank"
+                  href={result[props.config.reference_url_field]}
+                  class="ar-group"
+                >
+                  <button class="ar-text-gray-900 ar-p-2 ar-text-sm ar-rounded-md ar-hover:bg-gray-100 ar-flex ar-items-center ar-gap-1.5 group-hover:ar-bg-gray-100 ar-w-full">
+                    <FiFileText size={12} class="!ar-text-gray-600" />
+                    {result[props.config.reference_title_field]}
+                  </button>
+                </a>
+              ))}
+            </div>
+          </Show>
         </div>
       </Show>
 
