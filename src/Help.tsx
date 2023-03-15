@@ -25,13 +25,12 @@ interface Configuration {
 interface HelpProps {
   config: Configuration;
   demo?: boolean;
+  ref: any;
 }
 
 function Help(props: HelpProps) {
   let input: undefined | HTMLInputElement = undefined;
   const isDemoMode = props?.demo;
-
-  let widget: undefined | HTMLInputElement = undefined;
 
   onMount(() => {
     input?.focus();
@@ -39,9 +38,9 @@ function Help(props: HelpProps) {
     if (isDemoMode) {
       const previewContainer = document.getElementById("widget-preview");
 
-      if (widget) {
+      if (props.ref) {
         // Append widget to preview container
-        previewContainer?.appendChild(widget);
+        previewContainer?.appendChild(props.ref);
       }
     }
   });
@@ -131,7 +130,7 @@ function Help(props: HelpProps) {
 
   return (
     <div
-      ref={widget}
+      ref={props.ref}
       id="ask-relevance__root"
       role="dialog"
       aria-modal="true"

@@ -21,6 +21,7 @@
     "@motionone/solid": "^10.15.5",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",
+    "@solid-primitives/event-listener": "^2.2.8",
     "@solid-primitives/keyboard": "^1.0.10",
     "@solid-primitives/range": "^0.1.8",
     "ky": "^0.33.2",

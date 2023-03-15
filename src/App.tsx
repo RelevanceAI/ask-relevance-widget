@@ -1,7 +1,8 @@
 import { createShortcut } from "@solid-primitives/keyboard";
 import { FiHelpCircle } from "solid-icons/fi";
-import { createSignal, createEffect, Show } from "solid-js";
+import { createSignal, createEffect, Show, Ref } from "solid-js";
 import Help from "./Help";
+import onClickOutside from "./hooks/onClickOutside";
 
 function App() {
   const [helpVisible, setHelpVisible] = createSignal(false);
@@ -10,10 +11,13 @@ function App() {
     setHelpVisible(false);
   };
 
+  let widget: null | Ref<HTMLElement> = null;
+
   createEffect(() => {
     // Only listen for Esc when help visible and not demo mode.
     if (helpVisible() && !isDemoMode) {
       createShortcut(["Escape"], closeHelp);
+      onClickOutside(widget, closeHelp);
     }
   });
 
@@ -53,7 +57,7 @@ function App() {
         </Show>
 
         <Show when={isDemoMode || helpVisible()}>
-          <Help config={config} demo={isDemoMode} />
+          <Help ref={widget} config={config} demo={isDemoMode} />
         </Show>
       </>
     );
