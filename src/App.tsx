@@ -1,5 +1,5 @@
 import { createShortcut } from "@solid-primitives/keyboard";
-import { FiHelpCircle } from "solid-icons/fi";
+import { BsQuestion } from "solid-icons/bs";
 import { createSignal, createEffect, Show, Ref } from "solid-js";
 import Help from "./Help";
 import onClickOutside from "./hooks/onClickOutside";
@@ -48,11 +48,12 @@ function App() {
       <>
         <Show when={!isDemoMode}>
           <button
+            id="ask_relevance__trigger"
             aria-label="Open help prompt"
-            class="ar-fixed ar-bottom-6 ar-right-6 ar-bg-white ar-rounded-full ar-border ar-border-gray-300/75 ar-hover:bg-gray-100 ar-shadow ar-p-2 ar-w-fit ar-h-fit !ar-z-[999999]"
+            class="ar-fixed ar-bottom-6 ar-right-6 ar-bg-indigo-500 ar-rounded-full ar-hover:bg-gray-100 ar-shadow-lg ar-p-1 ar-w-fit ar-h-fit !ar-z-[999999]"
             onClick={() => setHelpVisible(!helpVisible())}
           >
-            <FiHelpCircle size={24} class="!ar-text-gray-800" />
+            <BsQuestion size={48} class="!ar-text-indigo-50" />
           </button>
         </Show>
 
