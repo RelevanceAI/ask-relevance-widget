@@ -22,6 +22,11 @@ interface Configuration {
   model?: string;
 }
 
+interface Reference {
+  title: string;
+  url?: string;
+}
+
 interface HelpProps {
   config: Configuration;
   demo?: boolean;
@@ -77,11 +82,16 @@ function Help(props: HelpProps) {
       instantAnswerResults: { references },
     } = answerObj() as Record<string, any>;
 
-    return references;
+    return references as Reference[];
   });
 
   const referencesExist = createMemo(() => {
-    return Array.isArray(references()) && references().length > 0;
+    return (
+      Array.isArray(references()) &&
+      references()!.length > 0 &&
+      // Only show references if they contain a URL.
+      references()!.every((ref) => ref.title && ref.url)
+    );
   });
 
   const submitQuestion = async () => {
