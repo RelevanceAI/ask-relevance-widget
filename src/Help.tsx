@@ -280,12 +280,8 @@ function Help(props: HelpProps) {
           <Show when={referencesExist()}>
             <div role="group" class="ar-pt-3 ar-flex ar-flex-wrap ar-gap-2.5">
               {references()?.map((ref: any) => (
-                <a
-                  role="option"
-                  href={ref[props.config.reference_url_field]}
-                  target="_blank"
-                >
-                  <button class="ar-py-0.5 ar-px-2 ar-rounded-md ar-bg-indigo-100 ar-group ar-text-indigo-800 ar-text-sm ar-flex ar-items-center ar-gap-1.5">
+                <a role="option" href={ref.url} target="_blank">
+                  <button class="ar-py-0.5 ar-px-2 ar-rounded-md ar-bg-indigo-100 hover:ar-bg-indigo-200 ar-group ar-text-indigo-800 ar-text-sm ar-flex ar-items-center ar-gap-1.5">
                     <FiFileText
                       size={12}
                       class="!ar-text-indigo-800 ar-opacity-80"
