@@ -45,7 +45,7 @@ function App() {
       : JSON.parse(decodedConfig ?? "");
 
     return (
-      <>
+      <div class="ask_relevance__container">
         <Show when={!isDemoMode}>
           <button
             id="ask_relevance__trigger"
@@ -60,7 +60,7 @@ function App() {
         <Show when={isDemoMode || helpVisible()}>
           <Help ref={widget} config={config} demo={isDemoMode} />
         </Show>
-      </>
+      </div>
     );
   } catch (err) {
     // Don't show help button if configuration invalid.
