@@ -110,7 +110,7 @@ function Help(props: HelpProps) {
     return results;
   });
 
-  const showDocuments = true;
+  const showDocuments = props.config?.showDocuments ?? false;
 
   const submitQuestion = async () => {
     setAnswerObj(null);
@@ -145,25 +145,6 @@ function Help(props: HelpProps) {
         })
         .json();
 
-      const fetchResults: Record<string, any> = ky
-        .post(props.config.url, {
-          headers: {
-            Authorization: `${props.config.auth_header}`,
-          },
-          json: {
-            vectorSearchQuery: [
-              {
-                field: props.config.vector_field,
-                model: props.config?.model ?? "all-mpnet-base-v2",
-                query: question(),
-              },
-            ],
-            minimumRelevance: 0.1,
-            pageSize: 3,
-          },
-        })
-        .json();
-
       const promises = [
         fetchAIAnswer.then((res) => {
           setAnswerObj(res);
@@ -172,6 +153,25 @@ function Help(props: HelpProps) {
       ];
 
       if (showDocuments) {
+        const fetchResults: Record<string, any> = ky
+          .post(props.config.url, {
+            headers: {
+              Authorization: `${props.config.auth_header}`,
+            },
+            json: {
+              vectorSearchQuery: [
+                {
+                  field: props.config.vector_field,
+                  model: props.config?.model ?? "all-mpnet-base-v2",
+                  query: question(),
+                },
+              ],
+              minimumRelevance: 0.1,
+              pageSize: 3,
+            },
+          })
+          .json();
+
         promises.push(
           fetchResults.then((res) => {
             setResultsObj(res);
