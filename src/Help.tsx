@@ -20,6 +20,8 @@ interface Configuration {
   auth_header: string;
   /** GPT model to use */
   model?: string;
+  /** Whether to show documents first while waiting for AI answer to load */
+  showDocuments?: string;
 }
 
 interface Reference {
@@ -108,6 +110,8 @@ function Help(props: HelpProps) {
     return results;
   });
 
+  const showDocuments = Boolean(props.config?.showDocuments);
+
   const submitQuestion = async () => {
     setAnswerObj(null);
     setResultsObj(null);
@@ -160,22 +164,30 @@ function Help(props: HelpProps) {
         })
         .json();
 
-      await Promise.all([
-        fetchResults.then((res) => {
-          setResultsObj(res);
-          setResultsState("success");
-        }),
+      const promises = [
         fetchAIAnswer.then((res) => {
           setAnswerObj(res);
           setAnswerState("success");
         }),
-      ]);
+      ];
+
+      if (showDocuments) {
+        promises.push(
+          fetchResults.then((res) => {
+            setResultsObj(res);
+            setResultsState("success");
+          })
+        );
+      }
+
+      await Promise.all(promises);
 
       // TODO: Refactor
       /* if (res.instantAnswerResults?.status === "failed") {
         throw new Error();
       } */
     } catch (error) {
+      console.log(error);
       setAnswerState("error");
     }
   };
@@ -265,7 +277,12 @@ function Help(props: HelpProps) {
         </div>
       </Show>
 
-      <Show when={resultsState() === "loading" || resultsState() === "success"}>
+      <Show
+        when={
+          showDocuments &&
+          (resultsState() === "loading" || resultsState() === "success")
+        }
+      >
         <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5 ar-flex ar-flex-col ar-gap-2">
           <p class="ar-text-gray-900 ar-font-medium ar-text-sm">Docs</p>
           <Show when={results()}>
