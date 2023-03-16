@@ -20,6 +20,8 @@ interface Configuration {
   auth_header: string;
   /** GPT model to use */
   model?: string;
+  /** Whether to show documents first while waiting for AI answer to load */
+  showDocuments?: string;
 }
 
 interface Reference {
@@ -108,6 +110,8 @@ function Help(props: HelpProps) {
     return results;
   });
 
+  const showDocuments = props.config?.showDocuments ?? false;
+
   const submitQuestion = async () => {
     setAnswerObj(null);
     setResultsObj(null);
@@ -141,44 +145,68 @@ function Help(props: HelpProps) {
         })
         .json();
 
-      const fetchResults: Record<string, any> = ky
-        .post(props.config.url, {
-          headers: {
-            Authorization: `${props.config.auth_header}`,
-          },
-          json: {
-            vectorSearchQuery: [
-              {
-                field: props.config.vector_field,
-                model: props.config?.model ?? "all-mpnet-base-v2",
-                query: question(),
-              },
-            ],
-            minimumRelevance: 0.1,
-            pageSize: 3,
-          },
-        })
-        .json();
-
-      await Promise.all([
-        fetchResults.then((res) => {
-          setResultsObj(res);
-          setResultsState("success");
-        }),
+      const promises = [
         fetchAIAnswer.then((res) => {
           setAnswerObj(res);
           setAnswerState("success");
         }),
-      ]);
+      ];
+
+      if (showDocuments) {
+        const fetchResults: Record<string, any> = ky
+          .post(props.config.url, {
+            headers: {
+              Authorization: `${props.config.auth_header}`,
+            },
+            json: {
+              vectorSearchQuery: [
+                {
+                  field: props.config.vector_field,
+                  model: props.config?.model ?? "all-mpnet-base-v2",
+                  query: question(),
+                },
+              ],
+              minimumRelevance: 0.1,
+              pageSize: 3,
+            },
+          })
+          .json();
+
+        promises.push(
+          fetchResults.then((res) => {
+            setResultsObj(res);
+            setResultsState("success");
+          })
+        );
+      }
+
+      await Promise.all(promises);
 
       // TODO: Refactor
       /* if (res.instantAnswerResults?.status === "failed") {
         throw new Error();
       } */
     } catch (error) {
+      console.log(error);
       setAnswerState("error");
     }
   };
+
+  // TODO: Focus shift with arrow up/down keys
+  /* createEffect(() => {
+    if (
+      resultsState() === "success" &&
+      Array.isArray(results()) &&
+      results().length
+    ) {
+      // Get all elements with ID 'ask-relevance__doc-result'
+      const results = Array.from(
+        document.querySelectorAll(`[id="ask-relevance__doc-result"]`)
+      );
+      // @ts-ignore
+      results?.[0].focus();
+    }
+  }); */
 
   return (
     <div
@@ -192,7 +220,13 @@ function Help(props: HelpProps) {
           !props?.demo,
       }}
     >
-      <div class="ar-px-5 ar-py-5" id="ask-relevance__input">
+      <div
+        class="ar-px-5 ar-py-5"
+        classList={{
+          "ar-border-b ar-border-gray-200/75": answerState() !== "none",
+        }}
+        id="ask-relevance__input"
+      >
         <input
           ref={input}
           autocomplete="off"
@@ -207,32 +241,41 @@ function Help(props: HelpProps) {
         />
       </div>
 
-      <Show when={answerState() === "loading"}>
-        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5">
-          <div class="ar-flex ar-items-center ar-gap-1">
-            <Repeat times={3}>
-              {(i) => (
-                <Motion.div
-                  class="ar-flex ar-items-center ar-gap-1"
-                  animate={{ opacity: [0.8, 1, 0.8], scale: [0.8, 1, 0.8] }}
-                  transition={{
-                    offset: [0, 0.2, 1],
-                    duration: 0.2 * 3,
-                    delay: i * 0.2,
-                    repeat: Infinity,
-                  }}
-                >
-                  <div class="ar-w-2 ar-h-2 ar-rounded-full ar-bg-gray-400" />
-                </Motion.div>
-              )}
-            </Repeat>
+      <Show when={answerState() !== "none"}>
+        <div class="ar-w-full ar-p-5 ar-border-l-4 ar-border-indigo-500">
+          <div class="ar-flex ar-items-center ar-gap-1.5">
+            <div class="ar-bg-indigo-500 ar-rounded ar-flex ar-items-center ar-justify-center ar-w-fit ar-text-xs ar-px-1 ar-h-fit ar-font-bold ar-text-white">
+              AI
+            </div>
+            <p class="ar-text-indigo-700 ar-font-medium ar-text-sm">Answer</p>
           </div>
-        </div>
-      </Show>
 
-      <Show when={answer()}>
-        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5">
-          <p class="ar-text-gray-800 ar-leading-[1.775]">{answer()}</p>
+          <Show when={answerState() === "loading"}>
+            <div class="ar-flex ar-items-center ar-gap-1 ar-pt-5">
+              <Repeat times={3}>
+                {(i) => (
+                  <Motion.div
+                    class="ar-flex ar-items-center ar-gap-1"
+                    animate={{ opacity: [0.8, 1, 0.8], scale: [0.8, 1, 0.8] }}
+                    transition={{
+                      offset: [0, 0.15, 1],
+                      duration: 0.15 * 3,
+                      delay: i * 0.15,
+                      repeat: Infinity,
+                    }}
+                  >
+                    <div class="ar-w-2 ar-h-2 ar-rounded-full ar-bg-gray-400" />
+                  </Motion.div>
+                )}
+              </Repeat>
+            </div>
+          </Show>
+
+          <Show when={answer()}>
+            <p class="ar-text-gray-800 ar-leading-[1.775] ar-pt-4">
+              {answer()}
+            </p>
+          </Show>
 
           <Show when={referencesExist()}>
             <div role="group" class="ar-pt-3 ar-flex ar-flex-wrap ar-gap-2.5">
@@ -265,21 +308,29 @@ function Help(props: HelpProps) {
         </div>
       </Show>
 
-      <Show when={resultsState() === "loading" || resultsState() === "success"}>
-        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-p-5 ar-flex ar-flex-col ar-gap-2">
-          <p class="ar-text-gray-900 ar-font-medium ar-text-sm">Docs</p>
+      <Show
+        when={
+          showDocuments &&
+          resultsState() !== "none" &&
+          resultsState() !== "error"
+        }
+      >
+        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-py-5 ar-flex ar-flex-col ar-gap-2">
+          <p class="ar-text-gray-900 ar-font-medium ar-text-sm ar-px-6">Docs</p>
+
           <Show when={results()}>
-            <div class="ar-flex ar-flex-col">
+            <div class="ar-flex ar-flex-col ar-px-2.5">
               {results().map((result) => (
                 <a
+                  id="ask-relevance__doc-result"
+                  tabIndex={-1}
                   target="_blank"
                   href={result[props.config.reference_url_field]}
-                  class="ar-group"
+                  type="button"
+                  class="ar-text-gray-900 ar-py-2 ar-px-3.5 ar-text-sm ar-rounded-md hover:ar-bg-gray-100 ar-flex ar-items-center ar-gap-2 ar-w-full"
                 >
-                  <button class="ar-text-gray-900 ar-p-2 ar-text-sm ar-rounded-md ar-hover:bg-gray-100 ar-flex ar-items-center ar-gap-1.5 group-hover:ar-bg-gray-100 ar-w-full">
-                    <FiFileText size={12} class="!ar-text-gray-600" />
-                    {result[props.config.reference_title_field]}
-                  </button>
+                  <FiFileText size={12} class="!ar-text-gray-500" />
+                  {result[props.config.reference_title_field]}
                 </a>
               ))}
             </div>
@@ -296,7 +347,7 @@ function Help(props: HelpProps) {
         </div>
 
         <div class="ar-flex ar-items-center ar-gap-2">
-          <div class="ar-px-1 ar-py-0.5 ar-rounded ar-bg-gray-50 ar-w-fit ar-text-xs ar-border ar-border-gray-300/25 ar-text-gray-600">
+          <div class="ar-px-0.5 ar-rounded ar-bg-gray-50 ar-w-fit ar-text-xs ar-border ar-border-gray-300/25 ar-text-gray-600">
             ⏎
           </div>
           <span class="ar-text-xs ar-text-gray-600">Submit question</span>
