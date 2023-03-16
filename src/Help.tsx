@@ -42,11 +42,10 @@ function Help(props: HelpProps) {
 
     if (isDemoMode) {
       const previewContainer = document.getElementById("widget-preview");
+      const widget = document.getElementById("ask-relevance__root");
 
-      if (props.ref) {
-        // Append widget to preview container
-        previewContainer?.appendChild(props.ref);
-      }
+      // Append widget to preview container
+      previewContainer?.appendChild(widget);
     }
   });
 
