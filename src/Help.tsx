@@ -192,6 +192,22 @@ function Help(props: HelpProps) {
     }
   };
 
+  // TODO: Focus shift with arrow up/down keys
+  /* createEffect(() => {
+    if (
+      resultsState() === "success" &&
+      Array.isArray(results()) &&
+      results().length
+    ) {
+      // Get all elements with ID 'ask-relevance__doc-result'
+      const results = Array.from(
+        document.querySelectorAll(`[id="ask-relevance__doc-result"]`)
+      );
+      // @ts-ignore
+      results?.[0].focus();
+    }
+  }); */
+
   return (
     <div
       ref={props.ref}
@@ -306,14 +322,15 @@ function Help(props: HelpProps) {
             <div class="ar-flex ar-flex-col ar-px-2.5">
               {results().map((result) => (
                 <a
+                  id="ask-relevance__doc-result"
+                  tabIndex={-1}
                   target="_blank"
                   href={result[props.config.reference_url_field]}
-                  class="ar-group"
+                  type="button"
+                  class="ar-text-gray-900 ar-py-2 ar-px-3.5 ar-text-sm ar-rounded-md hover:ar-bg-gray-100 ar-flex ar-items-center ar-gap-2 ar-w-full"
                 >
-                  <button class="ar-text-gray-900 ar-py-2 ar-px-3.5 ar-text-sm ar-rounded-md ar-hover:bg-gray-100 ar-flex ar-items-center ar-gap-2 group-hover:ar-bg-gray-100 ar-w-full">
-                    <FiFileText size={12} class="!ar-text-gray-500" />
-                    {result[props.config.reference_title_field]}
-                  </button>
+                  <FiFileText size={12} class="!ar-text-gray-500" />
+                  {result[props.config.reference_title_field]}
                 </a>
               ))}
             </div>
