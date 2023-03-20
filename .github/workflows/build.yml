@@ -1,6 +1,6 @@
 name: Build
-on: 
-  pull_request: 
+on:
+  pull_request:
     types:
       - opened
       - reopened
@@ -23,7 +23,7 @@ jobs:
       - id: cache
         name: Cache build dependencies
         uses: actions/cache@v3
-        with: 
+        with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-${{steps.hash.outputs.lockb-hash}}
       - id: install-deps
