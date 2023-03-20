@@ -5,6 +5,27 @@ import Help from "./Help";
 import onClickOutside from "./hooks/onClickOutside";
 
 function App() {
+  // Allows users to control help widget programatically through the
+  // Window object
+  function createRelevanceWidgetController() {
+    function show() {
+      setHelpVisible(true);
+    }
+
+    function hide() {
+      setHelpVisible(false);
+    }
+
+    return {
+      show,
+      hide,
+    };
+  }
+
+  const controller = createRelevanceWidgetController();
+
+  (window as any).relevance = controller;
+
   const [helpVisible, setHelpVisible] = createSignal(false);
 
   const closeHelp = () => {
