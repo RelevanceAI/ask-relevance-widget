@@ -49,7 +49,6 @@ function App() {
 
   // Check if widget is in demo mode
   const isDemoMode = document.currentScript?.getAttribute("demo") === "true";
-  const isHeadlessMode = config?.headless === true;
 
   try {
     const isDevEnvironment = process.env.NODE_ENV === "development";
@@ -65,6 +64,8 @@ function App() {
             "1b4c9fb5-b838-4cc9-b875-d6d29573cb3c:OWM5NWQ1NGEtZDk3MC00ZjgzLWFiNGEtNjBjODI0MjdjNzY5",
         }
       : JSON.parse(decodedConfig ?? "");
+
+    const isHeadlessMode = config?.headless === true;
 
     return (
       <div class="ask_relevance__container">
