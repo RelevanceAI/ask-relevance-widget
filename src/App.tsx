@@ -49,6 +49,7 @@ function App() {
 
   // Check if widget is in demo mode
   const isDemoMode = document.currentScript?.getAttribute("demo") === "true";
+  const isHeadlessMode = config?.headless === true;
 
   try {
     const isDevEnvironment = process.env.NODE_ENV === "development";
@@ -67,7 +68,7 @@ function App() {
 
     return (
       <div class="ask_relevance__container">
-        <Show when={!isDemoMode}>
+        <Show when={!isDemoMode && !isHeadlessMode}>
           <button
             id="ask_relevance__trigger"
             aria-label="Open help prompt"
