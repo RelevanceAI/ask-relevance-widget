@@ -22,6 +22,8 @@ interface Configuration {
   model?: string;
   /** Whether to show documents first while waiting for AI answer to load */
   showDocuments?: string;
+  /** Hides trigger. Allows users to control modal programatically (etc. custom trigger) */
+  headless?: boolean;
 }
 
 interface Reference {
