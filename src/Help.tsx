@@ -144,6 +144,7 @@ function Help(props: HelpProps) {
               titleField: props.config.reference_title_field,
             },
           },
+          timeout: false,
         })
         .json();
 
@@ -171,6 +172,7 @@ function Help(props: HelpProps) {
               minimumRelevance: 0.1,
               pageSize: 3,
             },
+            timeout: false,
           })
           .json();
 
