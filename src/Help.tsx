@@ -22,8 +22,13 @@ interface Configuration {
   model?: string;
   /** Whether to show documents first while waiting for AI answer to load */
   showDocuments?: string;
-  /** Hides trigger. Allows users to control modal programatically (etc. custom trigger) */
+  /** Hides trigger. Allows users to control modal progrwamatically (etc. custom trigger) */
   headless?: boolean;
+  /**
+   * Searches the selected field only instead of all fields.
+   * Known as 'Keyword mode' in the dashboard.
+   */
+  lockToField?: boolean;
 }
 
 interface Reference {
@@ -127,13 +132,15 @@ function Help(props: HelpProps) {
             Authorization: `${props.config.auth_header}`,
           },
           json: {
-            vectorSearchQuery: [
-              {
-                field: props.config.vector_field,
-                model: props.config?.model ?? "all-mpnet-base-v2",
-                query: question(),
-              },
-            ],
+            ...(!props.config?.lockToField && {
+              vectorSearchQuery: [
+                {
+                  field: props.config.vector_field,
+                  model: props.config?.model ?? "all-mpnet-base-v2",
+                  query: question(),
+                },
+              ],
+            }),
             minimumRelevance: 0.1,
             pageSize: 3,
             instantAnswerQuery: {
@@ -143,6 +150,10 @@ function Help(props: HelpProps) {
               urlField: props.config.reference_url_field,
               titleField: props.config.reference_title_field,
             },
+            ...(props.config?.lockToField && { query: question() }),
+            ...(props.config?.lockToField && {
+              fieldsToSearch: [props.config.field],
+            }),
           },
           timeout: false,
         })

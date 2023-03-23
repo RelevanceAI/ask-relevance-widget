@@ -62,6 +62,7 @@ function App() {
           reference_title_field: "title",
           auth_header:
             "1b4c9fb5-b838-4cc9-b875-d6d29573cb3c:OWM5NWQ1NGEtZDk3MC00ZjgzLWFiNGEtNjBjODI0MjdjNzY5",
+          lockToField: true,
         }
       : JSON.parse(decodedConfig ?? "");
 
