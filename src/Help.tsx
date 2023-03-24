@@ -24,9 +24,10 @@ interface Configuration {
   showDocuments?: string;
   /** Hides trigger. Allows users to control modal progrwamatically (etc. custom trigger) */
   headless?: boolean;
+  /** Searches the selected field only instead of all fields. */
   /**
-   * Searches the selected field only instead of all fields.
-   * Known as 'Keyword mode' in the dashboard.
+   * For docs, searches the selected field only instead of all fields.
+   * Known as '(Docs) Keyword mode' in the dashboard.
    */
   lockToField?: boolean;
 }
@@ -132,15 +133,13 @@ function Help(props: HelpProps) {
             Authorization: `${props.config.auth_header}`,
           },
           json: {
-            ...(!props.config?.lockToField && {
-              vectorSearchQuery: [
-                {
-                  field: props.config.vector_field,
-                  model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question(),
-                },
-              ],
-            }),
+            vectorSearchQuery: [
+              {
+                field: props.config.vector_field,
+                model: props.config?.model ?? "all-mpnet-base-v2",
+                query: question(),
+              },
+            ],
             minimumRelevance: 0.1,
             pageSize: 3,
             instantAnswerQuery: {
@@ -150,10 +149,6 @@ function Help(props: HelpProps) {
               urlField: props.config.reference_url_field,
               titleField: props.config.reference_title_field,
             },
-            ...(props.config?.lockToField && { query: question() }),
-            ...(props.config?.lockToField && {
-              fieldsToSearch: [props.config.field],
-            }),
           },
           timeout: false,
         })
@@ -167,20 +162,39 @@ function Help(props: HelpProps) {
       ];
 
       if (showDocuments) {
+        // We treat a query as a potential keyword search if:
+        // - keyword mode is enabled
+        // - query is under 3 words
+        // Example:���� 'redis macOS'
+        const possibleKeywordSearch =
+          props.config?.lockToField && question()?.split(" ")?.length <= 3;
+
+        const payload = possibleKeywordSearch
+          ? {
+              query: question(),
+              fieldsToSearch: [
+                props.config.field,
+                props.config.reference_title_field,
+              ],
+            }
+          : {
+              vectorSearchQuery: [
+                {
+                  field: props.config.vector_field,
+                  model: props.config?.model ?? "all-mpnet-base-v2",
+                  query: question(),
+                  minimumRelevance: 0.1,
+                },
+              ],
+            };
+
         const fetchResults: Record<string, any> = ky
           .post(props.config.url, {
             headers: {
               Authorization: `${props.config.auth_header}`,
             },
             json: {
-              vectorSearchQuery: [
-                {
-                  field: props.config.vector_field,
-                  model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question(),
-                },
-              ],
-              minimumRelevance: 0.1,
+              ...payload,
               pageSize: 3,
             },
             timeout: false,
