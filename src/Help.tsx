@@ -279,7 +279,7 @@ function Help(props: HelpProps) {
           autocapitalize="off"
           spellcheck={false}
           placeholder="Ask a question..."
-          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400"
+          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400 bg-white"
           onInput={(e) => {
             setQuestion(e.currentTarget.value);
           }}
