@@ -128,6 +128,10 @@ function Help(props: HelpProps) {
     setResultsState("loading");
 
     try {
+      // We treat a query as a potential keyword search if:
+      // - keyword mode is enabled
+      // - query is under 3 words
+      // Example:���� 'redis macOS'
       const possibleKeywordSearch =
           props.config?.keywordMode && question()?.split(" ")?.length <= 3;
       
@@ -175,13 +179,6 @@ function Help(props: HelpProps) {
       }
 
       if (showDocuments) {
-        // We treat a query as a potential keyword search if:
-        // - keyword mode is enabled
-        // - query is under 3 words
-        // Example:���� 'redis macOS'
-        const possibleKeywordSearch =
-          props.config?.keywordMode && question()?.split(" ")?.length <= 30;
-
         const payload = possibleKeywordSearch
           ? {
               query: question(),
