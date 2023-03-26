@@ -22,14 +22,16 @@ interface Configuration {
   model?: string;
   /** Whether to show documents first while waiting for AI answer to load */
   showDocuments?: string;
+  /** The number of documents to show */
+  documentsPageSize?: number;
   /** Hides trigger. Allows users to control modal progrwamatically (etc. custom trigger) */
   headless?: boolean;
-  /** Searches the selected field only instead of all fields. */
+  /** Searches the selected field only instead of all fields with keyword mode. */
   /**
    * For docs, searches the selected field only instead of all fields.
    * Known as '(Docs) Keyword mode' in the dashboard.
    */
-  lockToField?: boolean;
+  keywordMode?: boolean;
 }
 
 interface Reference {
@@ -123,52 +125,60 @@ function Help(props: HelpProps) {
   const submitQuestion = async () => {
     setAnswerObj(null);
     setResultsObj(null);
-    setAnswerState("loading");
     setResultsState("loading");
 
     try {
-      const fetchAIAnswer: Record<string, any> = ky
-        .post(props.config.url, {
-          headers: {
-            Authorization: `${props.config.auth_header}`,
-          },
-          json: {
-            vectorSearchQuery: [
-              {
-                field: props.config.vector_field,
-                model: props.config?.model ?? "all-mpnet-base-v2",
-                query: question(),
-              },
-            ],
-            minimumRelevance: 0.1,
-            pageSize: 3,
-            instantAnswerQuery: {
-              field: props.config.field,
-              query: question(),
-              preset: "support3",
-              urlField: props.config.reference_url_field,
-              titleField: props.config.reference_title_field,
-            },
-          },
-          timeout: false,
-        })
-        .json();
+      // We treat a query as a potential keyword search if:
+      // - keyword mode is enabled
+      // - query is under 3 words
+      // Example:���� 'redis macOS'
+      const possibleKeywordSearch =
+          props.config?.keywordMode && question()?.split(" ")?.length <= 3;
+      
+      const promises = [];
 
-      const promises = [
-        fetchAIAnswer.then((res) => {
-          setAnswerObj(res);
-          setAnswerState("success");
-        }),
-      ];
+      // always unless if we're in showDocuments mode and use a keyword search
+      if (question()[question()?.length - 1] === "?" || !showDocuments || !possibleKeywordSearch) {
+        setAnswerState("loading");
+
+        const fetchAIAnswer: Record<string, any> = ky
+          .post(props.config.url, {
+            headers: {
+              Authorization: `${props.config.auth_header}`,
+            },
+            json: {
+              vectorSearchQuery: [
+                {
+                  field: props.config.vector_field,
+                  model: props.config?.model ?? "all-mpnet-base-v2",
+                  query: question(),
+                },
+              ],
+              minimumRelevance: 0.1,
+              pageSize:  props.config.documentsPageSize || 3,
+              instantAnswerQuery: {
+                field: props.config.field,
+                query: question(),
+                preset: "support3",
+                urlField: props.config.reference_url_field,
+                titleField: props.config.reference_title_field,
+              },
+            },
+            timeout: false,
+          })
+          .json();
+
+          promises.push(
+            fetchAIAnswer.then((res) => {
+              setAnswerObj(res);
+              setAnswerState("success");
+            })
+          );
+      } else {
+        setAnswerState("none");
+      }
 
       if (showDocuments) {
-        // We treat a query as a potential keyword search if:
-        // - keyword mode is enabled
-        // - query is under 3 words
-        // Example:���� 'redis macOS'
-        const possibleKeywordSearch =
-          props.config?.lockToField && question()?.split(" ")?.length <= 3;
-
         const payload = possibleKeywordSearch
           ? {
               query: question(),
@@ -176,16 +186,18 @@ function Help(props: HelpProps) {
                 props.config.field,
                 props.config.reference_title_field,
               ],
+              includeFields: [props.config.reference_url_field, props.config.reference_title_field]
             }
           : {
               vectorSearchQuery: [
                 {
                   field: props.config.vector_field,
                   model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question(),
-                  minimumRelevance: 0.1,
+                  query: question()
                 },
               ],
+              minimumRelevance: 0.1,
+              includeFields: [props.config.reference_url_field, props.config.reference_title_field]
             };
 
         const fetchResults: Record<string, any> = ky
@@ -195,7 +207,7 @@ function Help(props: HelpProps) {
             },
             json: {
               ...payload,
-              pageSize: 3,
+              pageSize: props.config.documentsPageSize || 5,
             },
             timeout: false,
           })
@@ -264,7 +276,7 @@ function Help(props: HelpProps) {
           autocapitalize="off"
           spellcheck={false}
           placeholder="Ask a question..."
-          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400"
+          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400 bg-white"
           onInput={(e) => {
             setQuestion(e.currentTarget.value);
           }}
