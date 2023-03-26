@@ -131,7 +131,7 @@ function Help(props: HelpProps) {
       // We treat a query as a potential keyword search if:
       // - keyword mode is enabled
       // - query is under 3 words
-      // Example:���� 'redis macOS'
+      // Example: 'redis macOS'
       const possibleKeywordSearch =
           props.config?.keywordMode && question()?.split(" ")?.length <= 3;
       
