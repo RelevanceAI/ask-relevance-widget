@@ -32,6 +32,8 @@ interface Configuration {
    * Known as '(Docs) Keyword mode' in the dashboard.
    */
   keywordMode?: boolean;
+  /** Whether to store queries being sent */
+  storeQueries?: boolean;
 }
 
 interface Reference {
@@ -162,6 +164,7 @@ function Help(props: HelpProps) {
                 preset: "support3",
                 urlField: props.config.reference_url_field,
                 titleField: props.config.reference_title_field,
+                storeQueries: props.config.storeQueries || false,
               },
             },
             timeout: false,
