@@ -5,7 +5,7 @@
 
 ## Looking to embed Ask Relevance in your app?
 
-[Create a Relevance AI account](https://cloud.relevanceai.com), then follow the instructions to setup Ask Relevance for your data. You'll be able to preview Ask Relevance and copy the snippet needed to install the widget. If you're running into problems, [reach out to support](https://docs.relevanceai.com/page/support) and we'll get back to you promptly!
+[Create a Relevance AI account](https://cloud.relevanceai.com), then follow the instructions to setup Ask Relevance for your data! You'll be able to preview Ask Relevance and copy the snippet needed to install the widget. If you're running into problems, [reach out to support](https://docs.relevanceai.com/page/support) and we'll get back to you promptly!
 
 ## Development
 
