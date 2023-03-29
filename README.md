@@ -1,6 +1,11 @@
 <div align="center">
 <img width="800" alt="Screenshot of the Ask Relevance widget embedded in an application" src="https://user-images.githubusercontent.com/33971845/224244436-11887ef8-66f5-4800-92e0-4c25d221a7a6.png">
 <p>The <b>Ask Relevance widget</b> lets you embed an AI support assistant into your app in one line of code. ⚡️🔮🧪</p> 
+  
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/relevanceai/ask-relevance-widget)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/relevanceai/ask-relevance-widget/release.yml)
+[![JSDelivr Hits](https://data.jsdelivr.com/v1/package/gh/relevanceai/ask-relevance-widget/badge)](https://www.jsdelivr.com/package/gh/relevanceai/ask-relevance-widget)
+  
 </div>
 
 ## Looking to embed Ask Relevance in your app?
