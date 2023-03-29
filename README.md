@@ -4,7 +4,7 @@
   
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/relevanceai/ask-relevance-widget)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/relevanceai/ask-relevance-widget/release.yml)
-[![JSDelivr Hits](https://data.jsdelivr.com/v1/package/gh/relevanceai/ask-relevance-widget/badge)](https://www.jsdelivr.com/package/gh/relevanceai/ask-relevance-widget)
+![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/relevanceai/ask-relevance-widget?color=FF5E3E)
   
 </div>
 
