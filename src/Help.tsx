@@ -1,5 +1,3 @@
-import { Motion } from "@motionone/solid";
-import { Repeat } from "@solid-primitives/range";
 import ky from "ky";
 import { FiFileText } from "solid-icons/fi";
 import { createMemo, createSignal, onMount, Show } from "solid-js";
@@ -135,12 +133,16 @@ function Help(props: HelpProps) {
       // - query is under 3 words
       // Example: 'redis macOS'
       const possibleKeywordSearch =
-          props.config?.keywordMode && question()?.split(" ")?.length <= 3;
-      
+        props.config?.keywordMode && question()?.split(" ")?.length <= 3;
+
       const promises = [];
 
       // always unless if we're in showDocuments mode and use a keyword search
-      if (question()[question()?.length - 1] === "?" || !showDocuments || !possibleKeywordSearch) {
+      if (
+        question()[question()?.length - 1] === "?" ||
+        !showDocuments ||
+        !possibleKeywordSearch
+      ) {
         setAnswerState("loading");
 
         const fetchAIAnswer: Record<string, any> = ky
@@ -157,7 +159,7 @@ function Help(props: HelpProps) {
                 },
               ],
               minimumRelevance: 0.1,
-              pageSize:  props.config.documentsPageSize || 3,
+              pageSize: props.config.documentsPageSize || 3,
               instantAnswerQuery: {
                 field: props.config.field,
                 query: question(),
@@ -171,12 +173,12 @@ function Help(props: HelpProps) {
           })
           .json();
 
-          promises.push(
-            fetchAIAnswer.then((res) => {
-              setAnswerObj(res);
-              setAnswerState("success");
-            })
-          );
+        promises.push(
+          fetchAIAnswer.then((res) => {
+            setAnswerObj(res);
+            setAnswerState("success");
+          })
+        );
       } else {
         setAnswerState("none");
       }
@@ -189,18 +191,24 @@ function Help(props: HelpProps) {
                 props.config.field,
                 props.config.reference_title_field,
               ],
-              includeFields: [props.config.reference_url_field, props.config.reference_title_field]
+              includeFields: [
+                props.config.reference_url_field,
+                props.config.reference_title_field,
+              ],
             }
           : {
               vectorSearchQuery: [
                 {
                   field: props.config.vector_field,
                   model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question()
+                  query: question(),
                 },
               ],
               minimumRelevance: 0.1,
-              includeFields: [props.config.reference_url_field, props.config.reference_title_field]
+              includeFields: [
+                props.config.reference_url_field,
+                props.config.reference_title_field,
+              ],
             };
 
         const fetchResults: Record<string, any> = ky
@@ -288,7 +296,10 @@ function Help(props: HelpProps) {
       </div>
 
       <Show when={answerState() !== "none"}>
-        <div class="ar-w-full ar-p-5 ar-border-l-4 ar-border-indigo-500">
+        <div
+          class="ar-w-full ar-p-5 ar-border-l-4 ar-border-indigo-500"
+          aria-busy={answerState() === "loading"}
+        >
           <div class="ar-flex ar-items-center ar-gap-1.5">
             <div class="ar-bg-indigo-500 ar-rounded ar-flex ar-items-center ar-justify-center ar-w-fit ar-text-xs ar-px-1 ar-h-fit ar-font-bold ar-text-white">
               AI
@@ -297,23 +308,13 @@ function Help(props: HelpProps) {
           </div>
 
           <Show when={answerState() === "loading"}>
-            <div class="ar-flex ar-items-center ar-gap-1 ar-pt-5">
-              <Repeat times={3}>
-                {(i) => (
-                  <Motion.div
-                    class="ar-flex ar-items-center ar-gap-1"
-                    animate={{ opacity: [0.8, 1, 0.8], scale: [0.8, 1, 0.8] }}
-                    transition={{
-                      offset: [0, 0.15, 1],
-                      duration: 0.15 * 3,
-                      delay: i * 0.15,
-                      repeat: Infinity,
-                    }}
-                  >
-                    <div class="ar-w-2 ar-h-2 ar-rounded-full ar-bg-gray-400" />
-                  </Motion.div>
-                )}
-              </Repeat>
+            <div
+              role="status"
+              aria-label="Loading answers"
+              class="ar-mt-5 ar-flex ar-flex-col ar-gap-3"
+            >
+              <div class="ar-h-4 ar-w-10/12 ar-rounded ar-bg-gradient-to-r ar-from-gray-200 ar-to-gray-100 ar-animate-pulse" />
+              <div class="ar-h-4 ar-w-6/12 ar-rounded ar-bg-gradient-to-r ar-from-gray-200 ar-to-gray-100 ar-animate-pulse" />
             </div>
           </Show>
 
@@ -357,8 +358,22 @@ function Help(props: HelpProps) {
           resultsState() !== "error"
         }
       >
-        <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-py-5 ar-flex ar-flex-col ar-gap-2">
+        <div
+          class="ar-border-t ar-border-gray-200/75 ar-w-full ar-py-5 ar-flex ar-flex-col ar-gap-2"
+          aria-busy={resultsState() === "loading"}
+        >
           <p class="ar-text-gray-900 ar-font-medium ar-text-sm ar-px-6">Docs</p>
+
+          <Show when={resultsState() === "loading"}>
+            <div
+              role="status"
+              aria-label="Loading results"
+              class="ar-mt-2.5 ar-px-6 ar-flex ar-flex-col ar-gap-4"
+            >
+              <div class="ar-h-4 ar-w-full ar-rounded ar-bg-gradient-to-r ar-from-gray-100 ar-to-gray-100/75 ar-animate-pulse" />
+              <div class="ar-h-4 ar-w-full ar-rounded ar-bg-gradient-to-r ar-from-gray-100 ar-to-gray-100/75 ar-animate-pulse" />
+            </div>
+          </Show>
 
           <Show when={results()}>
             <div class="ar-flex ar-flex-col ar-px-2.5">
