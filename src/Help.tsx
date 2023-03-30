@@ -266,7 +266,7 @@ function Help(props: HelpProps) {
       id="ask-relevance__root"
       role="dialog"
       aria-modal="true"
-      class="ask_relevance__container ar-w-full ar-max-w-2xl ar-z-[999999999999] ar-bg-white ar-rounded-xl ar-shadow-lg ar-border ar-border-gray-300/30 ar-transition-all"
+      class="ask_relevance__container ar-w-full ar-max-w-2xl ar-z-[999999999999] ar-bg-white ar-rounded-xl ar-shadow-lg ar-border ar-border-gray-300/30 ar-transition-all ar-overflow-hidden"
       classList={{
         "ar-fixed ar-top-24 ar-left-1/2": !props?.demo,
       }}
