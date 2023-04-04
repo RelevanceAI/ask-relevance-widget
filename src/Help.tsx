@@ -287,7 +287,7 @@ function Help(props: HelpProps) {
           autocapitalize="off"
           spellcheck={false}
           placeholder="Ask a question..."
-          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400 ar-bg-white"
+          class="ar-w-full ar-outline-none ar-caret-gray-500 ar-text-gray-900 ar-placeholder:text-gray-400 ar-bg-white ar-focus:outline-none"
           onInput={(e) => {
             setQuestion(e.currentTarget.value);
           }}
@@ -398,9 +398,9 @@ function Help(props: HelpProps) {
       <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-px-5 ar-py-2 ar-flex ar-items-center ar-justify-between">
         <div class="ar-flex ar-items-center ar-gap-2">
           <RelevanceGlyph class="ar-h-3 ar-opacity-70" />
-          <span class="ar-text-xs ar-text-gray-400 ar-leading-none ar-whitespace-nowrap">
+          <a href={`https://relevanceai.com/ask-relevance?utm_source=${window?.location?.hostname}`} class="ar-text-xs ar-text-gray-400 ar-leading-none ar-whitespace-nowrap">
             Powered by Relevance AI
-          </span>
+          </a>
         </div>
 
         <div class="ar-flex ar-items-center ar-gap-2">
