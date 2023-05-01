@@ -226,39 +226,32 @@ function Help(props: HelpProps) {
 
         promises.push(
           fetchResults.then((res) => {
-            setResultsObj(res);
+            // Remove duplicate results
+            const uniqueResults = res.results.reduce((acc, current) => {
+              const x = acc.find(
+                (item) =>
+                  item[props.config.reference_url_field] ===
+                  current[props.config.reference_url_field]
+              );
+              if (!x) {
+                return acc.concat([current]);
+              } else {
+                return acc;
+              }
+            }, []);
+
+            setResultsObj(uniqueResults);
             setResultsState("success");
           })
         );
       }
 
       await Promise.all(promises);
-
-      // TODO: Refactor
-      /* if (res.instantAnswerResults?.status === "failed") {
-        throw new Error();
-      } */
     } catch (error) {
       console.log(error);
       setAnswerState("error");
     }
   };
-
-  // TODO: Focus shift with arrow up/down keys
-  /* createEffect(() => {
-    if (
-      resultsState() === "success" &&
-      Array.isArray(results()) &&
-      results().length
-    ) {
-      // Get all elements with ID 'ask-relevance__doc-result'
-      const results = Array.from(
-        document.querySelectorAll(`[id="ask-relevance__doc-result"]`)
-      );
-      // @ts-ignore
-      results?.[0].focus();
-    }
-  }); */
 
   return (
     <div
@@ -398,7 +391,10 @@ function Help(props: HelpProps) {
       <div class="ar-border-t ar-border-gray-200/75 ar-w-full ar-px-5 ar-py-2 ar-flex ar-items-center ar-justify-between">
         <div class="ar-flex ar-items-center ar-gap-2">
           <RelevanceGlyph class="ar-h-3 ar-opacity-70" />
-          <a href={`https://relevanceai.com/ask-relevance?utm_source=${window?.location?.hostname}`} class="ar-text-xs ar-text-gray-400 ar-leading-none ar-whitespace-nowrap">
+          <a
+            href={`https://relevanceai.com/ask-relevance?utm_source=${window?.location?.hostname}`}
+            class="ar-text-xs ar-text-gray-400 ar-leading-none ar-whitespace-nowrap"
+          >
             Powered by Relevance AI
           </a>
         </div>
