@@ -32,6 +32,8 @@ interface Configuration {
   keywordMode?: boolean;
   /** Whether to store queries being sent */
   storeQueries?: boolean;
+  /** Title displayedfor 'Related documents' section */
+  relatedDocumentsTitle?: string;
 }
 
 interface Reference {
@@ -240,7 +242,7 @@ function Help(props: HelpProps) {
               }
             }, []);
 
-            setResultsObj(uniqueResults);
+            setResultsObj({ results: uniqueResults });
             setResultsState("success");
           })
         );
@@ -355,7 +357,9 @@ function Help(props: HelpProps) {
           class="ar-border-t ar-border-gray-200/75 ar-w-full ar-py-5 ar-flex ar-flex-col ar-gap-2"
           aria-busy={resultsState() === "loading"}
         >
-          <p class="ar-text-gray-900 ar-font-medium ar-text-sm ar-px-6">Docs</p>
+          <p class="ar-text-gray-900 ar-font-medium ar-text-sm ar-px-6">
+            {props.config?.relatedDocumentsTitle ?? "Docs"}
+          </p>
 
           <Show when={resultsState() === "loading"}>
             <div
