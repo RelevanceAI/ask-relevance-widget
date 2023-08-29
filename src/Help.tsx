@@ -34,6 +34,11 @@ interface Configuration {
   storeQueries?: boolean;
   /** Title displayedfor 'Related documents' section */
   relatedDocumentsTitle?: string;
+  /** Whether it's configured to use a chain */
+  useChain?: boolean;
+  chainId?: string;
+  region?: string;
+  projectId?: string;
 }
 
 interface Reference {
@@ -84,6 +89,13 @@ function Help(props: HelpProps) {
   const answer = createMemo(() => {
     if (!answerObj()) return null;
 
+    if (props.config.useChain) {
+      const {
+        output: { answer },
+      } = answerObj() as Record<string, any>;
+      
+      return answer;
+    }
     const {
       instantAnswerResults: { answer },
     } = answerObj() as Record<string, any>;
@@ -93,6 +105,14 @@ function Help(props: HelpProps) {
 
   const references = createMemo(() => {
     if (!answerObj()) return null;
+
+    if (props.config.useChain) {
+      const {
+        output: { references },
+      } = answerObj() as Record<string, any>;
+      
+      return references as Reference[];
+    }
 
     const {
       instantAnswerResults: { references },
@@ -147,40 +167,62 @@ function Help(props: HelpProps) {
       ) {
         setAnswerState("loading");
 
-        const fetchAIAnswer: Record<string, any> = ky
-          .post(props.config.url, {
-            headers: {
-              Authorization: `${props.config.auth_header}`,
-            },
-            json: {
-              vectorSearchQuery: [
-                {
-                  field: props.config.vector_field,
-                  model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question(),
+        if (props.config.useChain) {
+          const fetchAIAnswer: Record<string, any> = ky
+            .post(`https://api-${props.config.region}.stack.tryrelevance.com/latest/studios/${props.config.chainId}/trigger_limited`, {
+              json: { 
+                params: {
+                  question: question(),
                 },
-              ],
-              minimumRelevance: 0.1,
-              pageSize: props.config.documentsPageSize || 3,
-              instantAnswerQuery: {
-                field: props.config.field,
-                query: question(),
-                preset: "support3",
-                urlField: props.config.reference_url_field,
-                titleField: props.config.reference_title_field,
-                storeQueries: props.config.storeQueries || false,
+                project: props.config.projectId
               },
-            },
-            timeout: false,
-          })
-          .json();
+              timeout: false
+            }).json();
 
-        promises.push(
-          fetchAIAnswer.then((res) => {
-            setAnswerObj(res);
-            setAnswerState("success");
-          })
-        );
+            promises.push(
+              fetchAIAnswer.then((res) => {
+                setAnswerObj(res);
+                setAnswerState("success");
+              })
+            );
+
+        } else {
+
+          const fetchAIAnswer: Record<string, any> = ky
+            .post(props.config.url, {
+              headers: {
+                Authorization: `${props.config.auth_header}`,
+              },
+              json: {
+                vectorSearchQuery: [
+                  {
+                    field: props.config.vector_field,
+                    model: props.config?.model ?? "all-mpnet-base-v2",
+                    query: question(),
+                  },
+                ],
+                minimumRelevance: 0.1,
+                pageSize: props.config.documentsPageSize || 3,
+                instantAnswerQuery: {
+                  field: props.config.field,
+                  query: question(),
+                  preset: "support3",
+                  urlField: props.config.reference_url_field,
+                  titleField: props.config.reference_title_field,
+                  storeQueries: props.config.storeQueries || false,
+                },
+              },
+              timeout: false,
+            })
+            .json();
+
+          promises.push(
+            fetchAIAnswer.then((res) => {
+              setAnswerObj(res);
+              setAnswerState("success");
+            })
+          );
+        }
       } else {
         setAnswerState("none");
       }
