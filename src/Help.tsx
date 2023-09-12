@@ -39,6 +39,7 @@ interface Configuration {
   chainId?: string;
   region?: string;
   projectId?: string;
+  documentId?: string;
 }
 
 interface Reference {
@@ -228,66 +229,88 @@ function Help(props: HelpProps) {
       }
 
       if (showDocuments) {
-        const payload = possibleKeywordSearch
-          ? {
-              query: question(),
-              fieldsToSearch: [
-                props.config.field,
-                props.config.reference_title_field,
-              ],
-              includeFields: [
-                props.config.reference_url_field,
-                props.config.reference_title_field,
-              ],
-            }
-          : {
-              vectorSearchQuery: [
-                {
-                  field: props.config.vector_field,
-                  model: props.config?.model ?? "all-mpnet-base-v2",
-                  query: question(),
+        if (props.config.useChain) {
+          const fetchAiDocs: Record<string, any> = ky
+            .post(`https://api-${props.config.region}.stack.tryrelevance.com/latest/studios/${props.config.documentId}/trigger_limited`, {
+              json: { 
+                params: {
+                  question: question(),
                 },
-              ],
-              minimumRelevance: 0.1,
-              includeFields: [
-                props.config.reference_url_field,
-                props.config.reference_title_field,
-              ],
-            };
+                project: props.config.projectId
+              },
+              timeout: false
+            }).json();
 
-        const fetchResults: Record<string, any> = ky
-          .post(props.config.url, {
-            headers: {
-              Authorization: `${props.config.auth_header}`,
-            },
-            json: {
-              ...payload,
-              pageSize: props.config.documentsPageSize || 5,
-            },
-            timeout: false,
-          })
-          .json();
+            promises.push(
+              fetchAiDocs.then((res) => {
+                setResultsObj({ results: res.output.results });
+                setResultsState("success");
+              })
+            );
+            
 
-        promises.push(
-          fetchResults.then((res) => {
-            // Remove duplicate results
-            const uniqueResults = res.results.reduce((acc, current) => {
-              const x = acc.find(
-                (item) =>
-                  item[props.config.reference_url_field] ===
-                  current[props.config.reference_url_field]
-              );
-              if (!x) {
-                return acc.concat([current]);
-              } else {
-                return acc;
+        } else {
+          const payload = possibleKeywordSearch
+            ? {
+                query: question(),
+                fieldsToSearch: [
+                  props.config.field,
+                  props.config.reference_title_field,
+                ],
+                includeFields: [
+                  props.config.reference_url_field,
+                  props.config.reference_title_field,
+                ],
               }
-            }, []);
+            : {
+                vectorSearchQuery: [
+                  {
+                    field: props.config.vector_field,
+                    model: props.config?.model ?? "all-mpnet-base-v2",
+                    query: question(),
+                  },
+                ],
+                minimumRelevance: 0.1,
+                includeFields: [
+                  props.config.reference_url_field,
+                  props.config.reference_title_field,
+                ],
+              };
 
-            setResultsObj({ results: uniqueResults });
-            setResultsState("success");
-          })
-        );
+          const fetchResults: Record<string, any> = ky
+            .post(props.config.url, {
+              headers: {
+                Authorization: `${props.config.auth_header}`,
+              },
+              json: {
+                ...payload,
+                pageSize: props.config.documentsPageSize || 5,
+              },
+              timeout: false,
+            })
+            .json();
+
+          promises.push(
+            fetchResults.then((res) => {
+              // Remove duplicate results
+              const uniqueResults = res.results.reduce((acc, current) => {
+                const x = acc.find(
+                  (item) =>
+                    item[props.config.reference_url_field] ===
+                    current[props.config.reference_url_field]
+                );
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
+
+              setResultsObj({ results: uniqueResults });
+              setResultsState("success");
+            })
+          );
+        }
       }
 
       await Promise.all(promises);
