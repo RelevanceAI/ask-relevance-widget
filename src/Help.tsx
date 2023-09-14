@@ -153,10 +153,10 @@ function Help(props: HelpProps) {
     try {
       // We treat a query as a potential keyword search if:
       // - keyword mode is enabled
-      // - query is under 3 words
+      // - query is under 2 words
       // Example: 'redis macOS'
       const possibleKeywordSearch =
-        props.config?.keywordMode && question()?.split(" ")?.length <= 3;
+        props.config?.keywordMode && question()?.split(" ")?.length <= 2;
 
       const promises = [];
 
